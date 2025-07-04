@@ -122,6 +122,16 @@
                  <select id="item-selector" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-800 focus:border-amber-800 sm:text-sm rounded-md"></select>
             </div>
 
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="search-input" class="block text-sm font-medium text-gray-700">Search/filter nodes:</label>
+                    <input id="search-input" type="text" placeholder="Type to filter" class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-800 focus:border-amber-800 sm:text-sm rounded-md" />
+                </div>
+                <div class="flex items-end justify-end md:justify-start">
+                    <button id="downloadGraph" class="mt-1 px-4 py-2 bg-amber-800 text-white text-sm rounded-md hover:bg-amber-700">Download Graph</button>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
                 <div class="lg:col-span-2 card p-4">
                     <h3 class="font-bold text-center text-primary-dark">Knowledge Network</h3>
@@ -223,12 +233,16 @@
             stakeholders: document.getElementById('nav-stakeholders'),
         };
         const itemSelector = document.getElementById('item-selector');
+        const searchInput = document.getElementById('search-input');
+        const downloadBtn = document.getElementById('downloadGraph');
         const detailsContent = document.getElementById('details-content');
         
         let charts = {};
         let state = {
             activeNav: 'practices',
             selectedId: 'p1',
+            searchQuery: '',
+            fullNodeData: []
         };
 
         const PALETTE = {
@@ -282,18 +296,25 @@
 
         const createKnowledgeGraph = () => {
             const ctx = document.getElementById('knowledgeGraph').getContext('2d');
-            
-            const nodeData = Object.entries(ENTITY_CONFIG).flatMap(([key, config]) => 
+
+            const connectionCount = {};
+            DATA.relationships.forEach(r => {
+                connectionCount[r.source] = (connectionCount[r.source] || 0) + 1;
+                connectionCount[r.target] = (connectionCount[r.target] || 0) + 1;
+            });
+
+            const nodeData = Object.entries(ENTITY_CONFIG).flatMap(([key, config]) =>
                 config.data.map(item => ({
                     x: Math.random() * 20,
                     y: Math.random() * 20,
-                    r: 10,
+                    r: 8 + (connectionCount[item.id] || 0) * 2,
                     label: item.name,
                     id: item.id,
                     entityType: config.type,
                     baseColor: config.color,
                 }))
             );
+            state.fullNodeData = nodeData;
 
             charts.knowledgeGraph = new Chart(ctx, {
                 type: 'bubble',
@@ -340,6 +361,25 @@
                     }
                 }
             });
+
+            const canvas = charts.knowledgeGraph.canvas;
+            let dragging = null;
+            canvas.addEventListener('mousedown', evt => {
+                const points = charts.knowledgeGraph.getElementsAtEventForMode(evt, 'nearest', {intersect: true}, false);
+                if (points.length) {
+                    const p = charts.knowledgeGraph.data.datasets[points[0].datasetIndex].data[points[0].index];
+                    dragging = p;
+                }
+            });
+            canvas.addEventListener('mousemove', evt => {
+                if (dragging) {
+                    const pos = Chart.helpers.getRelativePosition(evt, charts.knowledgeGraph);
+                    dragging.x = charts.knowledgeGraph.scales.x.getValueForPixel(pos.x);
+                    dragging.y = charts.knowledgeGraph.scales.y.getValueForPixel(pos.y);
+                    charts.knowledgeGraph.update('none');
+                }
+            });
+            document.addEventListener('mouseup', () => { dragging = null; });
         };
 
         const createImplementationChart = () => {
@@ -463,6 +503,20 @@
             charts.knowledgeGraph.update();
         };
 
+        const applySearchFilter = () => {
+            const dataset = charts.knowledgeGraph.data.datasets[0];
+            const query = state.searchQuery.toLowerCase();
+            dataset.data = state.fullNodeData.filter(d => d.label.toLowerCase().includes(query));
+            dataset.backgroundColor = dataset.data.map(d => d.baseColor);
+            if (!dataset.data.find(p => p.id === state.selectedId) && dataset.data.length) {
+                state.selectedId = dataset.data[0].id;
+                itemSelector.value = state.selectedId;
+                updateDetailsPanel();
+            }
+            charts.knowledgeGraph.update();
+            updateKnowledgeGraphHighlight();
+        };
+
         const updateDashboard = () => {
             updateDetailsPanel();
             updateKnowledgeGraphHighlight();
@@ -474,6 +528,7 @@
             updateNav();
             populateSelector();
             updateDashboard();
+            applySearchFilter();
         };
 
         // --- INITIALIZATION ---
@@ -491,7 +546,20 @@
                 updateDashboard();
             });
 
+            searchInput.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value;
+                applySearchFilter();
+            });
+
+            downloadBtn.addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.href = charts.knowledgeGraph.toBase64Image();
+                link.download = 'knowledge_graph.png';
+                link.click();
+            });
+
             handleNavClick('practices');
+            applySearchFilter();
         };
         
         init();
