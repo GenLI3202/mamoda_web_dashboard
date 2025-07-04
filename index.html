@@ -329,6 +329,16 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    elements: {
+                        point: {
+                            pointStyle: ctx => {
+                                const type = ctx.raw.entityType;
+                                if (type === 'Stakeholder') return 'triangle';
+                                if (type === 'Practice') return 'rect';
+                                return 'circle';
+                            }
+                        }
+                    },
                     onClick: (e, elements) => {
                         if (elements.length > 0) {
                             const dataset = e.chart.data.datasets[elements[0].datasetIndex];
@@ -396,6 +406,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    elements: { point: { pointStyle: 'rect' } },
                     plugins: { legend: { display: false }, tooltip: {
                          callbacks: {
                             label: (c) => `${c.raw.name}: (Complexity: ${c.raw.x}, Intensity: ${c.raw.y})`
