@@ -8,7 +8,8 @@ from models import LevelEnum
 
 # ===================================================================
 # BASE & CREATE SCHEMAS
-# (These remain unchanged)
+# These schemas define the data structure for creating new records.
+# They are used to validate incoming data before it touches the database.
 # ===================================================================
 
 # --- Node Schemas ---
@@ -39,6 +40,7 @@ class PracticeBase(BaseModel):
     major_actions_involved: Optional[str] = None
     remark: Optional[str] = None
     evidence_source: Optional[str] = None
+    evidence: Optional[str] = None
     capital_intensity: Optional[LevelEnum] = None
     technical_complexity: Optional[LevelEnum] = None
     operational_disruption: Optional[LevelEnum] = None
@@ -47,6 +49,7 @@ class PracticeBase(BaseModel):
 class Stakeholder_GroupBase(BaseModel):
     id: str
     name: str
+    evidence: Optional[str] = None
 
 class StakeholderBase(BaseModel):
     id: str
@@ -54,11 +57,13 @@ class StakeholderBase(BaseModel):
     category_id: str
     definition: Optional[str] = None
     description: Optional[str] = None
+    evidence: Optional[str] = None
 
 class ConcernBase(BaseModel):
     id: str
     name: str
     description: Optional[str] = None
+    evidence: Optional[str] = None
 
 # --- Link Schemas ---
 class PracticeToTargetLinkBase(BaseModel):
@@ -78,14 +83,19 @@ class StakeholderToConcernLinkBase(BaseModel):
 class ConcernToTargetLinkBase(BaseModel):
     concern_id: str
     target_id: str
+    evidence: Optional[str] = None
 
 class SDObjectiveToSDGLinkBase(BaseModel):
     sd_objective_id: str
     sdg_goal_id: str
     weight: LevelEnum
     comment: Optional[str] = None
+    # UPDATED: Added evidence field to match the model
+    evidence: Optional[str] = None
 
 # --- Aliasing Create schemas ---
+# We create aliases for clarity. The 'Create' schema is what we expect
+# as input when creating a new entry in the database.
 SD_ObjectiveCreate = SD_ObjectiveBase
 SDG_GoalCreate = SDG_GoalBase
 SDG_TargetCreate = SDG_TargetBase
@@ -101,9 +111,10 @@ SDObjectiveToSDGLinkCreate = SDObjectiveToSDGLinkBase
 
 
 # ===================================================================
-# READ SCHEMAS 
-# These are used for data output and include relationships.
-# They have from_attributes = True to read from SQLAlchemy models.
+# READ SCHEMAS
+# These schemas are used when reading data from the database.
+# They include relationships to other objects and are configured to
+# work with SQLAlchemy's ORM objects.
 # ===================================================================
 
 # --- Link Read Schemas ---
@@ -125,7 +136,8 @@ class SDObjectiveToSDGLinkRead(SDObjectiveToSDGLinkBase):
         from_attributes = True
 
 # --- Node Read Schemas ---
-# The order here is important to help with forward references
+# The order of these classes is important to avoid forward reference issues.
+# A class must be defined before it is referenced as a nested type in another class.
 
 class SDG_IndicatorRead(SDG_IndicatorBase):
     class Config:
@@ -172,4 +184,3 @@ class Stakeholder_GroupRead(Stakeholder_GroupBase):
     stakeholders: List[StakeholderRead] = []
     class Config:
         from_attributes = True
-

@@ -79,7 +79,7 @@ class Practice(Base):
     description = Column(Text)
     major_actions_involved = Column(Text)
     remark = Column(Text)
-    evidence_source = Column(String)
+    evidence_source = Column(Text, nullable=True)    
     
     # Using the 5-level Enum for qualitative assessment
     capital_intensity = Column(SQLAlchemyEnum(LevelEnum))
@@ -142,6 +142,7 @@ class Stakeholder_Group(Base):
     
     # Relationships
     # One-to-many relationship to the Stakeholder class
+    evidence = Column(Text, nullable=True)    
     stakeholders = relationship("Stakeholder", back_populates="group")
     
     def __repr__(self):
@@ -159,6 +160,7 @@ class Stakeholder(Base):
     
     # Relationships
     # Many-to-one relationship back to its group
+    evidence = Column(Text, nullable=True)    
     group = relationship("Stakeholder_Group", back_populates="stakeholders")
     # One-to-many relationship to the association object
     concern_links = relationship("StakeholderToConcernLink", back_populates="stakeholder")
@@ -173,7 +175,7 @@ class Concern(Base):
     id = Column(String, primary_key=True) # E.g., "concern_jobs"
     name = Column(String, nullable=False)
     description = Column(Text)
-    
+    evidence = Column(Text, nullable=True)    
     # Relationships
     # These will link to our association objects, which we'll define in Part 3.
     sh_links = relationship("StakeholderToConcernLink", back_populates="concern")
@@ -240,7 +242,7 @@ class ConcernToTargetLink(Base):
     # Composite primary key
     concern_id = Column(String, ForeignKey('concern.id'), primary_key=True)
     target_id = Column(String, ForeignKey('sdg_target.id'), primary_key=True)
-    
+    evidence = Column(Text, nullable=True)    
     # Relationships for back-population
     concern = relationship("Concern", back_populates="target_links")
     target = relationship("SDG_Target", back_populates="concern_links")
@@ -254,6 +256,7 @@ class SDObjectiveToSDGLink(Base):
     # Composite primary key
     sd_objective_id = Column(String, ForeignKey('sd_objectives.id'), primary_key=True)
     sdg_goal_id = Column(String, ForeignKey('sdg_goal.id'), primary_key=True)
+    evidence = Column(Text, nullable=True)    
 
     # Attributes specific to the link
     # We use our 5-level enum here for consistency

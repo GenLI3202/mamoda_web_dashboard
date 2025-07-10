@@ -3,7 +3,7 @@
 from sqlalchemy.orm import Session
 # It's good practice to import the modules themselves to maintain namespace clarity.
 import models
-import valid_schemas
+import d_schemas
 
 # 2. Generic get_or_create function
 def get_or_create(db: Session, model, **kwargs):
@@ -27,41 +27,41 @@ def get_or_create(db: Session, model, **kwargs):
 
 # --- Node Helpers ---
 
-def create_sd_objective(db: Session, objective: valid_schemas.SD_ObjectiveCreate):
+def create_sd_objective(db: Session, objective: d_schemas.SD_ObjectiveCreate):
     db_obj, _ = get_or_create(db, models.SD_Objective, id=objective.id)
     return db_obj
 
-def create_sdg_goal(db: Session, goal: valid_schemas.SDG_GoalCreate):
+def create_sdg_goal(db: Session, goal: d_schemas.SDG_GoalCreate):
     db_obj, _ = get_or_create(db, models.SDG_Goal, **goal.model_dump())
     return db_obj
 
-def create_sdg_target(db: Session, target: valid_schemas.SDG_TargetCreate):
+def create_sdg_target(db: Session, target: d_schemas.SDG_TargetCreate):
     db_obj, _ = get_or_create(db, models.SDG_Target, **target.model_dump())
     return db_obj
 
-def create_sdg_indicator(db: Session, indicator: valid_schemas.SDG_IndicatorCreate):
+def create_sdg_indicator(db: Session, indicator: d_schemas.SDG_IndicatorCreate):
     db_obj, _ = get_or_create(db, models.SDG_Indicator, **indicator.model_dump())
     return db_obj
 
-def create_practice(db: Session, practice: valid_schemas.PracticeCreate):
+def create_practice(db: Session, practice: d_schemas.PracticeCreate):
     db_obj, _ = get_or_create(db, models.Practice, **practice.model_dump())
     return db_obj
 
-def create_stakeholder_group(db: Session, group: valid_schemas.Stakeholder_GroupCreate):
+def create_stakeholder_group(db: Session, group: d_schemas.Stakeholder_GroupCreate):
     db_obj, _ = get_or_create(db, models.Stakeholder_Group, **group.model_dump())
     return db_obj
 
-def create_stakeholder(db: Session, stakeholder: valid_schemas.StakeholderCreate):
+def create_stakeholder(db: Session, stakeholder: d_schemas.StakeholderCreate):
     db_obj, _ = get_or_create(db, models.Stakeholder, **stakeholder.model_dump())
     return db_obj
 
-def create_concern(db: Session, concern: valid_schemas.ConcernCreate):
+def create_concern(db: Session, concern: d_schemas.ConcernCreate):
     db_obj, _ = get_or_create(db, models.Concern, **concern.model_dump())
     return db_obj
 
 # --- Link Helpers ---
 
-def create_practice_to_target_link(db: Session, link: valid_schemas.PracticeToTargetLinkCreate):
+def create_practice_to_target_link(db: Session, link: d_schemas.PracticeToTargetLinkCreate):
     # For link tables with composite keys, we filter by the primary key fields
     # to check for existence.
     db_obj, _ = get_or_create(
@@ -74,7 +74,7 @@ def create_practice_to_target_link(db: Session, link: valid_schemas.PracticeToTa
     )
     return db_obj
 
-def create_stakeholder_to_concern_link(db: Session, link: valid_schemas.StakeholderToConcernLinkCreate):
+def create_stakeholder_to_concern_link(db: Session, link: d_schemas.StakeholderToConcernLinkCreate):
     db_obj, _ = get_or_create(
         db,
         models.StakeholderToConcernLink,
@@ -84,7 +84,7 @@ def create_stakeholder_to_concern_link(db: Session, link: valid_schemas.Stakehol
     )
     return db_obj
 
-def create_concern_to_target_link(db: Session, link: valid_schemas.ConcernToTargetLinkCreate):
+def create_concern_to_target_link(db: Session, link: d_schemas.ConcernToTargetLinkCreate):
     db_obj, _ = get_or_create(
         db,
         models.ConcernToTargetLink,
@@ -94,7 +94,7 @@ def create_concern_to_target_link(db: Session, link: valid_schemas.ConcernToTarg
     )
     return db_obj
 
-def create_sd_objective_to_sdg_link(db: Session, link: valid_schemas.SDObjectiveToSDGLinkCreate):
+def create_sd_objective_to_sdg_link(db: Session, link: d_schemas.SDObjectiveToSDGLinkCreate):
     db_obj, _ = get_or_create(
         db,
         models.SDObjectiveToSDGLink,
