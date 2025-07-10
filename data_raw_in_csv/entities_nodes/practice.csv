@@ -1,0 +1,3 @@
+id,name,category,description,capital_intensity,technical_complexity,operational_disruption,long_term_liability
+p1,Advanced Water Recycling Facility,Environmental,Implementation of a closed-loop water treatment and recycling plant.,H,H,M,True
+p2,Local Hiring and Training Program,Social,A program focused on hiring from local communities.,L,L,L,False

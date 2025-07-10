@@ -29,7 +29,6 @@ class LevelEnum(Enum):
     LOW = 'L'
 
 
-
 # The Declarative Base is a factory for creating base classes for your ORM models.
 # All of our model classes will inherit from this 'Base' object.
 # SQLAlchemy's machinery will then map these classes to tables in the database.
@@ -267,4 +266,4 @@ class SDObjectiveToSDGLink(Base):
     # SD_Objective and SDG_Goal. This table acts as an "enrichment" layer.
 
     def __repr__(self):
-        return f"<SDObjectiveToSDGLink objective='{self.sd_objective_id}' goal='{self.sdg_goal_id}'>"
+        return f"<SDObjectiveToSDGLink objective='{self.sd_objective_id}' goal='{self.sdg_goal_id}'>"   
