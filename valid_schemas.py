@@ -15,21 +15,23 @@ from models import LevelEnum
 # --- Node Schemas ---
 class SD_ObjectiveBase(BaseModel):
     id: str
+    description: str
 
 class SDG_GoalBase(BaseModel):
     id: str
     name: str
-    parent_objective_id: str
+    parent_objective_id: Optional[str] = None
 
 class SDG_TargetBase(BaseModel):
     id: str
+    short_name: str
     description: str
     parent_goal_id: str
 
 class SDG_IndicatorBase(BaseModel):
     id: str
     description: str
-    code: Optional[str] = None
+    code: str
     parent_target_id: str
 
 class PracticeBase(BaseModel):

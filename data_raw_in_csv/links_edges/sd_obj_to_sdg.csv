@@ -1,0 +1,3 @@
+sd_objective_id,sdg_goal_id,weight,comment,evidence
+Env,SDG6,H,"SDG6 is fundamentally an environmental goal.","UN SDG Documentation."
+Econ,SDG8,H,"SDG8 focuses on economic growth and employment.","UN SDG Documentation."

@@ -1,0 +1,18 @@
+id,name,parent_objective_id
+SDG1,No Poverty,Soc
+SDG2,Zero Hunger,
+SDG3,Good Health and Well-being,Soc
+SDG4,Quality Education,Soc
+SDG5,Gender Equality,Soc
+SDG6,Clean Water and Sanitation,Env
+SDG7,Affordable and Clean Energy,Env
+SDG8,Decent Work and Economic Growth,Econ
+SDG9,"Industry, Innovation and Infrastructure",Econ
+SDG10,Reduced Inequalities,Soc
+SDG11,Sustainable Cities and Communities,Soc
+SDG12,Responsible Consumption and Production,Econ
+SDG13,Climate Action,Env
+SDG14,Life Below Water,Env
+SDG15,Life on Land,Env
+SDG16,"Peace, Justice and Strong Institutions",Soc
+SDG17,Partnerships for the Goals,

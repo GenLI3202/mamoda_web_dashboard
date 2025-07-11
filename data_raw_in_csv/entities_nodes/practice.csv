@@ -1,3 +1,3 @@
-id,name,category,description,capital_intensity,technical_complexity,operational_disruption,long_term_liability
-p1,Advanced Water Recycling Facility,Environmental,Implementation of a closed-loop water treatment and recycling plant.,H,H,M,True
-p2,Local Hiring and Training Program,Social,A program focused on hiring from local communities.,L,L,L,False
+id,name,category,description,evidence_source,evidence,capital_intensity,technical_complexity,operational_disruption,long_term_liability
+p1,Advanced Water Recycling,Environmental,"Implementation of a closed-loop water treatment plant.","GRI 303-3","Internal report shows a 40% reduction in freshwater withdrawal.",H,H,M,True
+p2,Local Hiring Program,Social,"Program focused on hiring from local communities.","Company CSR Report 2023","Agreement with local council signed on 2023-05-12.",L,L,L,False

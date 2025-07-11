@@ -1,0 +1,3 @@
+stakeholder_id,concern_id,priority_weight,evidence
+sh1,con1_water,H,"Official mandate includes water quality enforcement."
+sh2,con2_jobs,H,"Community survey shows employment is the #1 priority."

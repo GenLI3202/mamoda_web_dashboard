@@ -48,6 +48,7 @@ class SD_Objective(Base):
     # This defines the one-to-many relationship from SD_Objective to SDG_Goal.
     # The 'back_populates' argument creates a two-way linkage, connecting to the 'objective' attribute in the SDG_Goal class.
     sdg_goals = relationship("SDG_Goal", back_populates="objective")
+    description = Column(Text)
 
     def __repr__(self):
         return f"<SD_Objective(id='{self.id}')>"
@@ -102,6 +103,7 @@ class SDG_Target(Base):
     
     # Columns
     id = Column(String, primary_key=True) # E.g., "1.1"
+    short_name = Column(String, nullable=True) 
     description = Column(Text, nullable=False)
     parent_goal_id = Column(String, ForeignKey('sdg_goal.id'))
     

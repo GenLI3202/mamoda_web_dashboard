@@ -1,0 +1,3 @@
+practice_id,target_id,relevance_weight,is_direct,evidence,math_model
+p1,6.3,H,True,"Direct impact on water treatment goals.","See model H2O-4.5"
+p2,8.8,H,True,"Directly addresses safe working environments for local hires.",""
