@@ -43,6 +43,11 @@ def create_sdg_indicator(db: Session, indicator: d_schemas.SDG_IndicatorCreate):
     db_obj, _ = get_or_create(db, models.SDG_Indicator, **indicator.model_dump())
     return db_obj
 
+def create_practice_action(db: Session, action: valid_schemas.PracticeActionCreate):
+    """Creates a new PracticeAction if it doesn't exist."""
+    db_action, _ = get_or_create(db, models.PracticeAction, name=action.name, description=action.description)
+    return db_action
+
 def create_practice(db: Session, practice: d_schemas.PracticeCreate):
     db_obj, _ = get_or_create(db, models.Practice, **practice.model_dump())
     return db_obj
@@ -73,6 +78,17 @@ def create_practice_to_target_link(db: Session, link: d_schemas.PracticeToTarget
         **link.model_dump()
     )
     return db_obj
+
+def create_practice_to_action_link(db: Session, link: valid_schemas.PracticeToActionLinkCreate):
+    """Creates a link between a Practice and a PracticeAction."""
+    db_link, _ = get_or_create(
+        db,
+        models.PracticeToActionLink,
+        practice_id=link.practice_id,
+        action_id=link.action_id,
+        evidence=link.evidence
+    )
+    return db_link
 
 def create_stakeholder_to_concern_link(db: Session, link: d_schemas.StakeholderToConcernLinkCreate):
     db_obj, _ = get_or_create(

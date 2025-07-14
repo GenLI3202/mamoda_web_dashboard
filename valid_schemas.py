@@ -34,19 +34,24 @@ class SDG_IndicatorBase(BaseModel):
     code: str
     parent_target_id: str
 
+
+# --- Schemas for PracticeAction ---
+class PracticeActionBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
 class PracticeBase(BaseModel):
     id: str
     name: str
     category: Optional[str] = None
     description: Optional[str] = None
-    major_actions_involved: Optional[str] = None
     remark: Optional[str] = None
-    evidence_source: Optional[str] = None
-    evidence: Optional[str] = None
+    evidence_source: Optional[str] = None 
     capital_intensity: Optional[LevelEnum] = None
     technical_complexity: Optional[LevelEnum] = None
     operational_disruption: Optional[LevelEnum] = None
     long_term_liability: Optional[bool] = None
+
 
 class Stakeholder_GroupBase(BaseModel):
     id: str
@@ -68,6 +73,7 @@ class ConcernBase(BaseModel):
     evidence: Optional[str] = None
 
 # --- Link Schemas ---
+
 class PracticeToTargetLinkBase(BaseModel):
     practice_id: str
     target_id: str
@@ -75,6 +81,11 @@ class PracticeToTargetLinkBase(BaseModel):
     is_direct: bool
     evidence: Optional[str] = None
     math_model: Optional[str] = None
+
+class PracticeToActionLinkBase(BaseModel):
+    practice_id: str
+    action_id: int
+    evidence: Optional[str] = None
 
 class StakeholderToConcernLinkBase(BaseModel):
     stakeholder_id: str
@@ -102,11 +113,13 @@ SD_ObjectiveCreate = SD_ObjectiveBase
 SDG_GoalCreate = SDG_GoalBase
 SDG_TargetCreate = SDG_TargetBase
 SDG_IndicatorCreate = SDG_IndicatorBase
+PracticeActionCreate = PracticeActionBase
 PracticeCreate = PracticeBase
 Stakeholder_GroupCreate = Stakeholder_GroupBase
 StakeholderCreate = StakeholderBase
 ConcernCreate = ConcernBase
 PracticeToTargetLinkCreate = PracticeToTargetLinkBase
+PracticeToActionLinkCreate = PracticeToActionLinkBase
 StakeholderToConcernLinkCreate = StakeholderToConcernLinkBase
 ConcernToTargetLinkCreate = ConcernToTargetLinkBase
 SDObjectiveToSDGLinkCreate = SDObjectiveToSDGLinkBase
@@ -120,6 +133,10 @@ SDObjectiveToSDGLinkCreate = SDObjectiveToSDGLinkBase
 # ===================================================================
 
 # --- Link Read Schemas ---
+class PracticeToActionLinkRead(PracticeToActionLinkBase):    # action: PracticeActionRead
+    class Config:
+        from_attributes = True
+
 class PracticeToTargetLinkRead(PracticeToTargetLinkBase):
     last_updated: datetime
     class Config:
@@ -165,8 +182,14 @@ class SD_ObjectiveRead(SD_ObjectiveBase):
     class Config:
         from_attributes = True
 
+class PracticeActionRead(PracticeActionBase):
+    id: int
+    class Config:
+        from_attributes = True
+
 class PracticeRead(PracticeBase):
     target_links: List[PracticeToTargetLinkRead] = []
+    action_links: List[PracticeToActionLinkRead] = []
     class Config:
         from_attributes = True
 

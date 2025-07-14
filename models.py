@@ -70,33 +70,44 @@ class SDG_Goal(Base):
     def __repr__(self):
         return f"<SDG_Goal(id='{self.id}', name='{self.name}')>"
     
+class PracticeAction(Base):
+    __tablename__ = 'practice_action'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(Text)
+    
+    # Relationship to the association table
+    practice_links = relationship("PracticeToActionLink", back_populates="action")
+
+    def __repr__(self):
+        return f"<PracticeAction(name='{self.name}')>"
+
+
 class Practice(Base):
     __tablename__ = 'practice'
     
-    # Columns
-    id = Column(String, primary_key=True) # E.g., "p1"
+    # Columns for the high-level strategy
+    id = Column(String, primary_key=True)
     name = Column(String, nullable=False)
     category = Column(String)
     description = Column(Text)
-    major_actions_involved = Column(Text)
     remark = Column(Text)
-    evidence_source = Column(Text, nullable=True)    
+    evidence_source = Column(Text, nullable=True) 
     
-    # Using the 5-level Enum for qualitative assessment
+    # Implementation details remain here as an overall assessment
     capital_intensity = Column(SQLAlchemyEnum(LevelEnum))
     technical_complexity = Column(SQLAlchemyEnum(LevelEnum))
     operational_disruption = Column(SQLAlchemyEnum(LevelEnum))
-    
-    # Boolean for true/false values
     long_term_liability = Column(Boolean)
     
     # Relationships
-    # This will link to the PracticeToTargetLink association object.
     target_links = relationship("PracticeToTargetLink", back_populates="practice")
+    # One-to-many relationship to its specific actions
+    action_links = relationship("PracticeToActionLink", back_populates="practice", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Practice(id='{self.id}', name='{self.name}')>"
-    
 
 class SDG_Target(Base):
     __tablename__ = 'sdg_target'
@@ -218,6 +229,24 @@ class PracticeToTargetLink(Base):
     def __repr__(self):
         return f"<PracticeToTargetLink practice='{self.practice_id}' target='{self.target_id}'>"
     
+
+class PracticeToActionLink(Base):
+    __tablename__ = 'practice_to_action_link'
+    
+    # Foreign keys to Practice and PracticeAction form a composite primary key
+    practice_id = Column(String, ForeignKey('practice.id'), primary_key=True)
+    action_id = Column(Integer, ForeignKey('practice_action.id'), primary_key=True)
+    
+    # Justification for why this specific action is part of this strategy
+    evidence = Column(Text, nullable=True)
+    
+    # Relationships to navigate back to the parent objects
+    practice = relationship("Practice", back_populates="action_links")
+    action = relationship("PracticeAction", back_populates="practice_links")
+    
+    def __repr__(self):
+        return f"<PracticeToActionLink practice='{self.practice_id}' action='{self.action_id}'>"
+
 
 class StakeholderToConcernLink(Base):
     __tablename__ = 'stakeholder_to_concern_link'
