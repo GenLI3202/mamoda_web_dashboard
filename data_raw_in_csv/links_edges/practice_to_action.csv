@@ -1,0 +1,36 @@
+practice_id,action_id,evidence
+p_econ_impact,ac1,"Economic contributions can manifest locally through procurement spending."
+p_econ_impact,ac2,"Economic contributions can manifest locally through employment provision."
+p_econ_impact,ac3,"Economic contributions can manifest locally through capacity building... Extending skills development to workers who are not employees and the local community can also contribute to positive impacts."
+p_econ_impact,ac4,"The sector also invests in infrastructure and community development projects."
+p_econ_impact,ac5,"Lasting negative impacts can be mitigated at the local level... by incorporating inclusive development, benefit-sharing mechanisms, and impact-driven community development programs."
+p_econ_impact,ac6,"Using a fly-in fly-out work arrangement to supply workers can reduce the employment opportunities available to local communities, detracting from the potential economic benefits at the local level."
+
+p_ghg_mitigation,ac7,"Emissions can be reduced by switching to renewable or low-carbon fuel sources."
+p_ghg_mitigation,ac8,"Emissions can be reduced through energy efficiency measures."
+p_ghg_mitigation,ac9,"Emissions can be reduced through electrification of equipment."
+p_ghg_mitigation,ac10,""
+p_ghg_mitigation,ac11,"The rehabilitation of mine sites can be used to capture CO2 with appropriate reclamation strategies."
+
+p_air_quality,ac12,"Air emissions are released during transportation."
+p_air_quality,ac13,"Organizations utilize dust control measures to prevent or mitigate dust exposure for workers and communities, including ventilation systems, dust collectors, irrigation bars, dry fog, water cannons."
+p_air_quality,ac14,"The extraction and smelting of non-ferrous metals can produce mercury gases and other toxic emissions."
+p_air_quality,ac15,"Organizations utilize dust control measures such as bunds of trees."
+p_air_quality,ac16,"Air quality surveys can be undertaken to assess the adequacy of controls."
+
+p_bio_mgmt,ac17,"Direct drivers of biodiversity loss influence biodiversity and ecosystem processes, leading to impacts such as degradation of ecosystems, habitat fragmentation, and animal mortality."
+p_bio_mgmt,ac18,"To limit and manage impacts on biodiversity, many mining organizations use the mitigation hierarchy tool to help inform their actions... The mitigation hierarchy follows avoidance, minimization, restoration, rehabilitation, and offset."
+p_bio_mgmt,ac19,"Mining activities may contribute to the direct drivers of biodiversity loss through land and sea use change... exploitation of natural resources... introduction of invasive alien species; and pollution."
+p_bio_mgmt,ac20,"Reporting these... ensures the organization provides sufficient information about its impacts in relation to the topic."
+
+p_water_mgmt,ac21,"Mining organizations can influence hydrology and have impacts on the livelihoods of local communities by altering groundwater levels, shifting river flow regimes..."
+p_water_mgmt,ac22,"The total volume of freshwater withdrawn for mining operations can also vary according to an organization's ability to substitute freshwater... and recycling infrastructure."
+p_water_mgmt,ac23,"The impacts of mining activities on the quality of surface water, groundwater, and seawater can be due to water discharge and runoff, heavy metal contamination, spills, leaks or leaching of chemicals..."
+p_water_mgmt,ac24,"Acid mine drainage can be one of the most significant water impacts from metal mines..."
+p_water_mgmt,ac25,"In areas already facing water stress, mining operations can aggravate the problem by reducing water accessibility for other users and intensifying competition for water. These impacts can exacerbate tensions..."
+
+p_comm_engage,ac26,"An organization is expected to conduct community engagement to understand the vulnerabilities and priorities of local communities and how they may be affected by the organization’s activities."
+p_comm_engage,ac27,"Meaningful engagement also entails consultation with local communities before making decisions, including by acknowledging the power imbalance..."
+p_comm_engage,ac28,"Organizations further address their negative impacts by establishing or participating in grievance mechanisms and other remediation processes tailored to community needs."
+p_comm_engage,ac29,"Meaningful engagement with local communities involves two-way communication that is transparent, proactive, responsive, and ongoing."
+p_comm_engage,ac30,"Meaningful engagement... is essential for obtaining and retaining a social license to operate."
