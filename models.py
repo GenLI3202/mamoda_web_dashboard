@@ -23,9 +23,9 @@ from enum import Enum
 # of the application (like Pydantic models or frontend components).
 class LevelEnum(Enum):
     HIGH = 'H'
-    HIGH_MEDIUM = 'H/M'
+    MEDIUM_HIGH = 'M/H'
     MEDIUM = 'M'
-    MEDIUM_LOW = 'M/L'
+    LOW_MEDIUM = 'L/M'
     LOW = 'L'
 
 

@@ -17,6 +17,7 @@ p_air_quality,ac13,"Organizations utilize dust control measures to prevent or mi
 p_air_quality,ac14,"The extraction and smelting of non-ferrous metals can produce mercury gases and other toxic emissions."
 p_air_quality,ac15,"Organizations utilize dust control measures such as bunds of trees."
 p_air_quality,ac16,"Air quality surveys can be undertaken to assess the adequacy of controls."
+p_ghg_mitigation,ac16,"Regular air quality monitoring is essential for assessing the effectiveness of emission controls and ensuring compliance with environmental standards."
 
 p_bio_mgmt,ac17,"Direct drivers of biodiversity loss influence biodiversity and ecosystem processes, leading to impacts such as degradation of ecosystems, habitat fragmentation, and animal mortality."
 p_bio_mgmt,ac18,"To limit and manage impacts on biodiversity, many mining organizations use the mitigation hierarchy tool to help inform their actions... The mitigation hierarchy follows avoidance, minimization, restoration, rehabilitation, and offset."
