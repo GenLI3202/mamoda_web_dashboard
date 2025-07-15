@@ -152,7 +152,7 @@ class Stakeholder_Group(Base):
     # Columns
     id = Column(String, primary_key=True) # E.g., "shg1_cv_sct"
     name = Column(String, nullable=False)
-    
+    description = Column(Text)
     # Relationships
     # One-to-many relationship to the Stakeholder class
     evidence = Column(Text, nullable=True)    

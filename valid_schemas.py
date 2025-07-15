@@ -57,6 +57,7 @@ class Stakeholder_GroupBase(BaseModel):
     id: str
     name: str
     evidence: Optional[str] = None
+    description: Optional[str] = None
 
 class StakeholderBase(BaseModel):
     id: str

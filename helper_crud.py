@@ -1,124 +1,123 @@
+# helper_crud.py (Corrected)
 
-# 1. Imports
 from sqlalchemy.orm import Session
-# It's good practice to import the modules themselves to maintain namespace clarity.
 import models
-import d_schemas
+import valid_schemas
 
-# 2. Generic get_or_create function
+# ===================================================================
+# GENERIC HELPER (for simple, single-key nodes)
+# ===================================================================
 def get_or_create(db: Session, model, **kwargs):
     """
-    Checks if an instance of a model exists in the database.
-    If it exists, it returns the instance and False.
-    If not, it creates a new instance, adds it to the session, and returns it and True.
+    Checks if an instance of a model with a simple key exists.
+    If it exists, it returns the instance. If not, it creates it.
+    This is best used for tables with a single, non-composite primary key.
     """
-    # For models with composite keys, we filter by all primary key columns.
-    # For others, we can just use the provided kwargs.
     instance = db.query(model).filter_by(**kwargs).first()
     if instance:
-        return instance, False # Return instance and a flag indicating it was not created
+        return instance, False
     else:
         instance = model(**kwargs)
         db.add(instance)
-        # Note: We don't commit here. The calling function is responsible for the commit.
-        return instance, True # Return instance and a flag indicating it was created
+        return instance, True
 
-# 3. Specific create functions for each model
-
-# --- Node Helpers ---
-
-def create_sd_objective(db: Session, objective: d_schemas.SD_ObjectiveCreate):
-    db_obj, _ = get_or_create(db, models.SD_Objective, id=objective.id)
+# ===================================================================
+# NODE HELPERS (These can still use the generic helper)
+# ===================================================================
+def create_sd_objective(db: Session, objective: valid_schemas.SD_ObjectiveCreate):
+    db_obj, _ = get_or_create(db, models.SD_Objective, **objective.model_dump())
     return db_obj
 
-def create_sdg_goal(db: Session, goal: d_schemas.SDG_GoalCreate):
+def create_sdg_goal(db: Session, goal: valid_schemas.SDG_GoalCreate):
     db_obj, _ = get_or_create(db, models.SDG_Goal, **goal.model_dump())
     return db_obj
 
-def create_sdg_target(db: Session, target: d_schemas.SDG_TargetCreate):
+def create_sdg_target(db: Session, target: valid_schemas.SDG_TargetCreate):
     db_obj, _ = get_or_create(db, models.SDG_Target, **target.model_dump())
     return db_obj
 
-def create_sdg_indicator(db: Session, indicator: d_schemas.SDG_IndicatorCreate):
+def create_sdg_indicator(db: Session, indicator: valid_schemas.SDG_IndicatorCreate):
     db_obj, _ = get_or_create(db, models.SDG_Indicator, **indicator.model_dump())
     return db_obj
 
 def create_practice_action(db: Session, action: valid_schemas.PracticeActionCreate):
-    """Creates a new PracticeAction if it doesn't exist."""
-    db_action, _ = get_or_create(db, models.PracticeAction, name=action.name, description=action.description)
-    return db_action
+    db_obj, _ = get_or_create(db, models.PracticeAction, **action.model_dump())
+    return db_obj
 
-def create_practice(db: Session, practice: d_schemas.PracticeCreate):
+def create_practice(db: Session, practice: valid_schemas.PracticeCreate):
     db_obj, _ = get_or_create(db, models.Practice, **practice.model_dump())
     return db_obj
 
-def create_stakeholder_group(db: Session, group: d_schemas.Stakeholder_GroupCreate):
+def create_stakeholder_group(db: Session, group: valid_schemas.Stakeholder_GroupCreate):
     db_obj, _ = get_or_create(db, models.Stakeholder_Group, **group.model_dump())
     return db_obj
 
-def create_stakeholder(db: Session, stakeholder: d_schemas.StakeholderCreate):
+def create_stakeholder(db: Session, stakeholder: valid_schemas.StakeholderCreate):
     db_obj, _ = get_or_create(db, models.Stakeholder, **stakeholder.model_dump())
     return db_obj
 
-def create_concern(db: Session, concern: d_schemas.ConcernCreate):
+def create_concern(db: Session, concern: valid_schemas.ConcernCreate):
     db_obj, _ = get_or_create(db, models.Concern, **concern.model_dump())
     return db_obj
 
-# --- Link Helpers ---
-
-def create_practice_to_target_link(db: Session, link: d_schemas.PracticeToTargetLinkCreate):
-    # For link tables with composite keys, we filter by the primary key fields
-    # to check for existence.
-    db_obj, _ = get_or_create(
-        db,
-        models.PracticeToTargetLink,
+# ===================================================================
+# LINK HELPERS (Rewritten to be specific and avoid the TypeError)
+# ===================================================================
+def create_practice_to_target_link(db: Session, link: valid_schemas.PracticeToTargetLinkCreate):
+    # Check if the link already exists using the composite primary key
+    db_obj = db.query(models.PracticeToTargetLink).filter_by(
         practice_id=link.practice_id,
-        target_id=link.target_id,
-        # If the link doesn't exist, the remaining data is used to create it.
-        **link.model_dump()
-    )
+        target_id=link.target_id
+    ).first()
+    
+    if not db_obj:
+        # If it doesn't exist, create it using all the data from the Pydantic model
+        db_obj = models.PracticeToTargetLink(**link.model_dump())
+        db.add(db_obj)
     return db_obj
 
 def create_practice_to_action_link(db: Session, link: valid_schemas.PracticeToActionLinkCreate):
-    """Creates a link between a Practice and a PracticeAction."""
-    db_link, _ = get_or_create(
-        db,
-        models.PracticeToActionLink,
+    db_obj = db.query(models.PracticeToActionLink).filter_by(
         practice_id=link.practice_id,
-        action_id=link.action_id,
-        evidence=link.evidence
-    )
-    return db_link
+        action_id=link.action_id
+    ).first()
+    
+    if not db_obj:
+        db_obj = models.PracticeToActionLink(**link.model_dump())
+        db.add(db_obj)
+    return db_obj
 
-def create_stakeholder_to_concern_link(db: Session, link: d_schemas.StakeholderToConcernLinkCreate):
-    db_obj, _ = get_or_create(
-        db,
-        models.StakeholderToConcernLink,
+def create_stakeholder_to_concern_link(db: Session, link: valid_schemas.StakeholderToConcernLinkCreate):
+    db_obj = db.query(models.StakeholderToConcernLink).filter_by(
         stakeholder_id=link.stakeholder_id,
-        concern_id=link.concern_id,
-        **link.model_dump()
-    )
+        concern_id=link.concern_id
+    ).first()
+
+    if not db_obj:
+        db_obj = models.StakeholderToConcernLink(**link.model_dump())
+        db.add(db_obj)
     return db_obj
 
-def create_concern_to_target_link(db: Session, link: d_schemas.ConcernToTargetLinkCreate):
-    db_obj, _ = get_or_create(
-        db,
-        models.ConcernToTargetLink,
+def create_concern_to_target_link(db: Session, link: valid_schemas.ConcernToTargetLinkCreate):
+    db_obj = db.query(models.ConcernToTargetLink).filter_by(
         concern_id=link.concern_id,
-        target_id=link.target_id,
-        **link.model_dump()
-    )
+        target_id=link.target_id
+    ).first()
+
+    if not db_obj:
+        db_obj = models.ConcernToTargetLink(**link.model_dump())
+        db.add(db_obj)
     return db_obj
 
-def create_sd_objective_to_sdg_link(db: Session, link: d_schemas.SDObjectiveToSDGLinkCreate):
-    db_obj, _ = get_or_create(
-        db,
-        models.SDObjectiveToSDGLink,
+def create_sd_objective_to_sdg_link(db: Session, link: valid_schemas.SDObjectiveToSDGLinkCreate):
+    db_obj = db.query(models.SDObjectiveToSDGLink).filter_by(
         sd_objective_id=link.sd_objective_id,
-        sdg_goal_id=link.sdg_goal_id,
-        **link.model_dump()
-    )
+        sdg_goal_id=link.sdg_goal_id
+    ).first()
+
+    if not db_obj:
+        db_obj = models.SDObjectiveToSDGLink(**link.model_dump())
+        db.add(db_obj)
     return db_obj
 
-
-print("CRUD Helper functions defined and ready for use.")
+print("✅ CRUD Helper functions defined and ready for use.")
