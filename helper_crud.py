@@ -120,4 +120,40 @@ def create_sd_objective_to_sdg_link(db: Session, link: valid_schemas.SDObjective
         db.add(db_obj)
     return db_obj
 
+
+# ==========================================================
+# ===== NEW HELPERS FOR MINING PROJECT-LEVEL INDICATORS ============
+# ==========================================================
+
+def create_mining_indicator(db: Session, indicator: valid_schemas.MiningIndicatorCreate):
+    """Creates a Mining Project Indicator, using its own ID from the CSV."""
+    db_obj = db.query(models.MiningIndicator).filter(models.MiningIndicator.id == indicator.id).first()
+    if not db_obj:
+        db_obj = models.MiningIndicator(**indicator.model_dump())
+        db.add(db_obj)
+    return db_obj
+
+def create_mining_indicator_to_target_link(db: Session, link: valid_schemas.MiningIndicatorToTargetLinkCreate):
+    """Creates a link between a Mining Project Indicator and an SDG Target."""
+    db_obj = db.query(models.MiningIndicatorToTargetLink).filter_by(
+        mining_indicator_id=link.mining_indicator_id,
+        target_id=link.target_id
+    ).first()
+    if not db_obj:
+        db_obj = models.MiningIndicatorToTargetLink(**link.model_dump())
+        db.add(db_obj)
+    return db_obj
+
+def create_practice_to_mining_indicator_link(db: Session, link: valid_schemas.PracticeToMiningIndicatorLinkCreate):
+    """Creates a link between a Practice and a Mining Project Indicator."""
+    db_obj = db.query(models.PracticeToMiningIndicatorLink).filter_by(
+        practice_id=link.practice_id,
+        mining_indicator_id=link.mining_indicator_id
+    ).first()
+    if not db_obj:
+        db_obj = models.PracticeToMiningIndicatorLink(**link.model_dump())
+        db.add(db_obj)
+    return db_obj
+
+
 print("✅ CRUD Helper functions defined and ready for use.")

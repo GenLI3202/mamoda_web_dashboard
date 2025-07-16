@@ -107,6 +107,25 @@ class SDObjectiveToSDGLinkBase(BaseModel):
     # UPDATED: Added evidence field to match the model
     evidence: Optional[str] = None
 
+# --- Base Schemas for Mining Indicators ---
+class MiningIndicatorBase(BaseModel):
+    id: int
+    name: str
+    category: str
+    description: Optional[str] = None
+    UnitOfMeasure: Optional[str] = None
+    EvidenceSource: Optional[str] = None
+
+class MiningIndicatorToTargetLinkBase(BaseModel):
+    mining_indicator_id: int
+    target_id: str
+
+class PracticeToMiningIndicatorLinkBase(BaseModel):
+    practice_id: str
+    mining_indicator_id: int
+    impact_score: Optional[float] = None
+    justification: Optional[str] = None
+
 # --- Aliasing Create schemas ---
 # We create aliases for clarity. The 'Create' schema is what we expect
 # as input when creating a new entry in the database.
@@ -124,6 +143,12 @@ PracticeToActionLinkCreate = PracticeToActionLinkBase
 StakeholderToConcernLinkCreate = StakeholderToConcernLinkBase
 ConcernToTargetLinkCreate = ConcernToTargetLinkBase
 SDObjectiveToSDGLinkCreate = SDObjectiveToSDGLinkBase
+
+
+MiningIndicatorCreate = MiningIndicatorBase
+MiningIndicatorToTargetLinkCreate = MiningIndicatorToTargetLinkBase
+PracticeToMiningIndicatorLinkCreate = PracticeToMiningIndicatorLinkBase
+
 
 
 # ===================================================================
@@ -155,6 +180,16 @@ class SDObjectiveToSDGLinkRead(SDObjectiveToSDGLinkBase):
     class Config:
         from_attributes = True
 
+
+# --- Read Schemas (for API output) ---
+class MiningIndicatorToTargetLinkRead(MiningIndicatorToTargetLinkBase):
+    class Config:
+        from_attributes = True
+
+class PracticeToMiningIndicatorLinkRead(PracticeToMiningIndicatorLinkBase):
+    class Config:
+        from_attributes = True
+
 # --- Node Read Schemas ---
 # The order of these classes is important to avoid forward reference issues.
 # A class must be defined before it is referenced as a nested type in another class.
@@ -168,6 +203,7 @@ class SDG_TargetRead(SDG_TargetBase):
     indicators: List[SDG_IndicatorRead] = []
     practice_links: List[PracticeToTargetLinkRead] = []
     concern_links: List[ConcernToTargetLinkRead] = []
+    mining_indicator_links: List[MiningIndicatorToTargetLinkRead] = []    
     class Config:
         from_attributes = True
 
@@ -191,8 +227,17 @@ class PracticeActionRead(PracticeActionBase):
 class PracticeRead(PracticeBase):
     target_links: List[PracticeToTargetLinkRead] = []
     action_links: List[PracticeToActionLinkRead] = []
+    mining_indicator_links: List[PracticeToMiningIndicatorLinkRead] = []
     class Config:
         from_attributes = True
+
+
+class MiningIndicatorRead(MiningIndicatorBase):
+    target_links: List[MiningIndicatorToTargetLinkRead] = []
+    practice_links: List[PracticeToMiningIndicatorLinkRead] = []
+    class Config:
+        from_attributes = True
+
 
 class ConcernRead(ConcernBase):
     sh_links: List[StakeholderToConcernLinkRead] = []
@@ -210,3 +255,5 @@ class Stakeholder_GroupRead(Stakeholder_GroupBase):
     stakeholders: List[StakeholderRead] = []
     class Config:
         from_attributes = True
+
+

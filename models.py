@@ -301,3 +301,40 @@ class SDObjectiveToSDGLink(Base):
 
     def __repr__(self):
         return f"<SDObjectiveToSDGLink objective='{self.sd_objective_id}' goal='{self.sdg_goal_id}'>"   
+    
+
+
+
+# ==========================================================
+# ===== NEW TABLES FOR MINING PROJECT-LEVEL INDICATORS ============
+# ==========================================================
+    
+class MiningIndicator(Base):
+    __tablename__ = 'mining_project_indicator'
+    id = Column(Integer, primary_key=True) # Use the ID from your list
+    name = Column(String, nullable=False)
+    category = Column(String, nullable=False)
+    description = Column(Text)
+    UnitOfMeasure = Column(String, nullable=False)      
+    EvidenceSource = Column(Text, nullable=True)
+    # Relationships
+    target_links = relationship("MineIndicatorToTargetLink", back_populates="mining_project_indicator")
+    practice_links = relationship("PracticeToMineIndicatorLink", back_populates="mining_project_indicator")
+
+class MiningIndicatorToTargetLink(Base):
+    __tablename__ = 'mining_indicator_to_target_link'
+    mining_indicator_id = Column(Integer, ForeignKey('mining_project_indicator.id'), primary_key=True)
+    target_id = Column(String, ForeignKey('sdg_target.id'), primary_key=True)
+    # Relationships
+    mining_project_indicator = relationship("MiningIndicator", back_populates="target_links")
+    target = relationship("SDG_Target", back_populates="mining_project_indicator_links")
+
+class PracticeToMineIndicatorLink(Base):
+    __tablename__ = 'practice_to_indicator_link'
+    practice_id = Column(String, ForeignKey('practice.id'), primary_key=True)
+    indicator_id = Column(Integer, ForeignKey('mining_project_indicator.id'), primary_key=True)
+    impact_score = Column(Float)
+    justification = Column(Text)
+    # Relationships
+    practice = relationship("Practice", back_populates="mining_project_indicator_links")
+    mining_project_indicator = relationship("MiningIndicator", back_populates="practice_links")
