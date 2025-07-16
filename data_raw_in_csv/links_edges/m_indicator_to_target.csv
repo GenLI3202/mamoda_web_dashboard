@@ -1,4 +1,4 @@
-indicator_id,target_id,evidence
+mining_indicator_id,target_id,evidence
 m0,8.2,"The 'Production/y' aspect of the indicator is a measure of economic productivity, as per Target 8.2."
 m0,8.5,"The 'Jobs created' aspect of the indicator directly relates to Target 8.5's goal of full and productive employment."
 m0,12.2,"The 'Resource composition' aspect of the indicator relates to the sustainable use of natural resources, as per Target 12.2."

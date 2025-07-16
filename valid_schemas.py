@@ -37,6 +37,7 @@ class SDG_IndicatorBase(BaseModel):
 
 # --- Schemas for PracticeAction ---
 class PracticeActionBase(BaseModel):
+    id: str  
     name: str
     description: Optional[str] = None
 
@@ -85,7 +86,7 @@ class PracticeToTargetLinkBase(BaseModel):
 
 class PracticeToActionLinkBase(BaseModel):
     practice_id: str
-    action_id: int
+    action_id: str
     evidence: Optional[str] = None
 
 class StakeholderToConcernLinkBase(BaseModel):
@@ -109,7 +110,7 @@ class SDObjectiveToSDGLinkBase(BaseModel):
 
 # --- Base Schemas for Mining Indicators ---
 class MiningIndicatorBase(BaseModel):
-    id: int
+    id: str
     name: str
     category: str
     description: Optional[str] = None
@@ -117,12 +118,13 @@ class MiningIndicatorBase(BaseModel):
     EvidenceSource: Optional[str] = None
 
 class MiningIndicatorToTargetLinkBase(BaseModel):
-    mining_indicator_id: int
+    mining_indicator_id: str
     target_id: str
+    evidence: Optional[str] = None
 
 class PracticeToMiningIndicatorLinkBase(BaseModel):
     practice_id: str
-    mining_indicator_id: int
+    mining_indicator_id: str
     impact_score: Optional[float] = None
     justification: Optional[str] = None
 
@@ -220,7 +222,7 @@ class SD_ObjectiveRead(SD_ObjectiveBase):
         from_attributes = True
 
 class PracticeActionRead(PracticeActionBase):
-    id: int
+    id: str
     class Config:
         from_attributes = True
 

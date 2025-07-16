@@ -1,4 +1,4 @@
-practice_id,indicator_id,impact_score,justification
+practice_id,mining_indicator_id,impact_score,justification
 p_econ_impact,m0,4.5,"Practice focuses on creating jobs, a key component of the Operational Footprint indicator."
 p_econ_impact,m2,4.0,"Actions like local procurement and benefit-sharing are designed to increase the mining value added to local GDP."
 p_econ_impact,m15,5.0,"The practice's focus on workforce training and capacity building directly improves the ratio of skilled local employment."

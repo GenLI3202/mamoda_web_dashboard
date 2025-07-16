@@ -73,7 +73,7 @@ class SDG_Goal(Base):
 class PracticeAction(Base):
     __tablename__ = 'practice_action'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(String, primary_key=True) # E.g., "ac1"
     name = Column(String, nullable=False, unique=True)
     description = Column(Text)
     
@@ -105,6 +105,7 @@ class Practice(Base):
     target_links = relationship("PracticeToTargetLink", back_populates="practice")
     # One-to-many relationship to its specific actions
     action_links = relationship("PracticeToActionLink", back_populates="practice", cascade="all, delete-orphan")
+    mining_project_indicator_links = relationship("PracticeToMiningIndicatorLink", back_populates="practice")
 
     def __repr__(self):
         return f"<Practice(id='{self.id}', name='{self.name}')>"
@@ -126,6 +127,7 @@ class SDG_Target(Base):
     # Link to association objects for many-to-many relationships
     practice_links = relationship("PracticeToTargetLink", back_populates="target")
     concern_links = relationship("ConcernToTargetLink", back_populates="target")
+    mining_project_indicator_links = relationship("MiningIndicatorToTargetLink", back_populates="target")
 
     def __repr__(self):
         return f"<SDG_Target(id='{self.id}')>"
@@ -235,7 +237,7 @@ class PracticeToActionLink(Base):
     
     # Foreign keys to Practice and PracticeAction form a composite primary key
     practice_id = Column(String, ForeignKey('practice.id'), primary_key=True)
-    action_id = Column(Integer, ForeignKey('practice_action.id'), primary_key=True)
+    action_id = Column(String, ForeignKey('practice_action.id'), primary_key=True)
     
     # Justification for why this specific action is part of this strategy
     evidence = Column(Text, nullable=True)
@@ -311,28 +313,30 @@ class SDObjectiveToSDGLink(Base):
     
 class MiningIndicator(Base):
     __tablename__ = 'mining_project_indicator'
-    id = Column(Integer, primary_key=True) # Use the ID from your list
+    id = Column(String, primary_key=True) # Use the ID from your list
     name = Column(String, nullable=False)
     category = Column(String, nullable=False)
     description = Column(Text)
     UnitOfMeasure = Column(String, nullable=False)      
     EvidenceSource = Column(Text, nullable=True)
     # Relationships
-    target_links = relationship("MineIndicatorToTargetLink", back_populates="mining_project_indicator")
-    practice_links = relationship("PracticeToMineIndicatorLink", back_populates="mining_project_indicator")
+    target_links = relationship("MiningIndicatorToTargetLink", back_populates="mining_project_indicator")
+    practice_links = relationship("PracticeToMiningIndicatorLink", back_populates="mining_project_indicator")
 
 class MiningIndicatorToTargetLink(Base):
     __tablename__ = 'mining_indicator_to_target_link'
-    mining_indicator_id = Column(Integer, ForeignKey('mining_project_indicator.id'), primary_key=True)
+    mining_indicator_id = Column(String, ForeignKey('mining_project_indicator.id'), primary_key=True)
     target_id = Column(String, ForeignKey('sdg_target.id'), primary_key=True)
+    evidence = Column(Text, nullable=True)
+    
     # Relationships
     mining_project_indicator = relationship("MiningIndicator", back_populates="target_links")
     target = relationship("SDG_Target", back_populates="mining_project_indicator_links")
 
-class PracticeToMineIndicatorLink(Base):
-    __tablename__ = 'practice_to_indicator_link'
+class PracticeToMiningIndicatorLink(Base):
+    __tablename__ = 'practice_to_mining_indicator_link'
     practice_id = Column(String, ForeignKey('practice.id'), primary_key=True)
-    indicator_id = Column(Integer, ForeignKey('mining_project_indicator.id'), primary_key=True)
+    mining_indicator_id = Column(String, ForeignKey('mining_project_indicator.id'), primary_key=True)
     impact_score = Column(Float)
     justification = Column(Text)
     # Relationships

@@ -1,43 +1,31 @@
 id,name,description
-# actions extracted from `p1 - Economic Impact Management
 ac1,"Local Procurement","Prioritizing sourcing goods/services from local suppliers and small businesses."
 ac2,"Direct Employment","Hiring and maintaining local workforce across all skill levels."
 ac3,"Workforce Training & Capacity Building","Investing extensively in vocational skills, professional training, and leadership programs for locals, explicitly addressing gender equality and diversity."
 ac4,"Physical Infrastructure & Essential Services","Direct financing, construction, or upgrading of critical community infrastructure (roads, schools, health centers, water and sanitation, energy)."
 ac5,"Benefit-Sharing Mechanisms","Implementing transparent and formal mechanisms explicitly designed for equitable sharing of financial gains (e.g., revenue sharing, equity ownership, royalty payments, community trust funds)."
 ac6,"Mitigation of Negative Labor-Market Impacts","Proactive management of workforce changes caused by automation or ""fly-in, fly-out"" (FIFO) operations, including retraining programs, transition assistance, relocation support, and direct compensation for affected local workers."
-
-# actions extracted from 'GHG Emissions Management'
 ac7,"Transition to Renewable Energy","Transitioning to renewable energy infrastructure (e.g., solar, wind power plants)."
 ac8,"Adopt Energy-Efficient Technologies","Implementing new technologies and optimizing operational budgets to improve energy efficiency."
 ac9,"Electrify Mobile Fleet","Electrifying mining equipment and vehicle fleets."
 ac10,"Invest in Carbon Capture","Funding and implementing carbon capture and storage (CCS) technologies."
 ac11,"Rehabilitate for Carbon Sequestration","Using post-closure rehabilitation efforts, such as reforestation, to capture CO2."
-
-# actions extracted from 'Air Emissions Control'
 ac12,"Optimize Transportation Routes","Designing and managing transportation routes and methods to minimize emissions and dust."
 ac13,"Implement Engineering Controls for Dust","Utilizing engineering controls such as ventilation systems, dust collectors, irrigation bars, and water cannons."
 ac14,"Implement Specialized Emission Controls","Using specialized technologies to mitigate emissions from smelting and other processing activities."
 ac15,"Use Vegetation for Dust Control","Planting vegetation (e.g., bunds of trees) for dust control."
 ac16,"Conduct Air Quality Monitoring","Performing regular air quality surveys and monitoring to assess and manage emissions."
-
-# actions extracted from 'Biodiversity Protection'
 ac17,"Assess Biodiversity Impacts & Risks","Identifying and assessing the direct drivers of biodiversity loss, including impacts from land/sea use change, pollution, resource exploitation, and invasive species, particularly in or near ecologically sensitive areas."
 ac18,"Apply the Mitigation Hierarchy","Systematically applying the mitigation hierarchy to address identified impacts: prioritizing the avoidance of negative impacts, then minimizing them, followed by restoration and rehabilitation, and finally using offsets for residual impacts."
 ac19,"Manage Operational Drivers of Biodiversity Loss","Implementing specific operational programs and controls to manage the direct drivers of loss, such as pollution control systems, land clearance procedures, and invasive species management plans."
 ac20,"Monitor and Report Biodiversity State","Monitoring and reporting on the state of biodiversity and ecosystem services throughout the mine's life-cycle to evaluate the effectiveness of management actions and to ensure transparency."
-
-# actions extracted from 'Water and Effluents Management'
 ac21,"Conduct Water Impact & Risk Assessments","Conducting assessments to identify and understand the potential impacts of mining operations on water quality, availability, and on local ecosystems and communities."
 ac22,"Improve Water Use Efficiency","Implementing technologies and operational processes to increase water-use efficiency, including the use of recycling and reuse technologies to reduce freshwater withdrawal."
 ac23,"Manage Water Discharge Quality","Implementing systems to manage and treat wastewater and effluents before discharge to ensure compliance with quality standards and to prevent contamination of surface and groundwater."
 ac24,"Prevent Acid Mine Drainage","Implementing specific actions and controls to prevent or mitigate the formation and release of acid mine drainage from rock and tailings."
 ac25,"Engage with Local Water Users","Engaging in collaborative approaches with local communities and other stakeholders to prevent and mitigate impacts on shared water resources, especially in water-stressed areas."
-
-# actions extracted from 'Local Community Engagement'
 ac26,"Participatory Needs & Impact Assessment","Conducting regular, inclusive consultations—with special attention to marginalized and vulnerable groups—to jointly identify and prioritize community needs and concerns, including formal community participation in environmental and social impact assessments (ESIAs)."
 ac27,"Stakeholder Capacity-Building","Providing training and capacity-building for community representatives to enable their meaningful participation in decision-making."
 ac28,"Effective Grievance Mechanisms","Establishing trusted, accessible, and responsive grievance processes for the community."
 ac29,"Transparency & Communication","Maintaining clear communication channels, providing regular reporting, and establishing feedback loops with communities."
 ac30,"Continuous Consent","Implementing ongoing, proactive efforts to obtain and maintain community consent, rather than relying on single-instance approvals."
-

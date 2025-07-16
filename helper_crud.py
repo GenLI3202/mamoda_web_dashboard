@@ -157,3 +157,27 @@ def create_practice_to_mining_indicator_link(db: Session, link: valid_schemas.Pr
 
 
 print("✅ CRUD Helper functions defined and ready for use.")
+
+
+# ===================================================================
+# ===== END OF CRUD HELPER FUNCTIONS FOR MAMODA WEB DASHBOARD =========
+
+
+
+
+# ================= Archvived Code ===========================
+
+# def create_practice_action(db: Session, action: valid_schemas.PracticeActionCreate):
+#     """
+#     Creates a PracticeAction using the string-based ID from the CSV file.
+#     """
+#     # First, check if an object with this ID already exists.
+#     db_obj = db.query(models.PracticeAction).filter(models.PracticeAction.id == action.id).first()
+    
+#     # If it doesn't exist, create it using all data from the Pydantic object.
+#     if not db_obj:
+#         # The action.model_dump() will include the 'id', 'name', and 'description'.
+#         db_obj = models.PracticeAction(**action.model_dump())
+#         db.add(db_obj)
+        
+#     return db_obj

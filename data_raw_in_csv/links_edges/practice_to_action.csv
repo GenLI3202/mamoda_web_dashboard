@@ -9,7 +9,7 @@ p_econ_impact,ac6,"Using a fly-in fly-out work arrangement to supply workers can
 p_ghg_mitigation,ac7,"Emissions can be reduced by switching to renewable or low-carbon fuel sources."
 p_ghg_mitigation,ac8,"Emissions can be reduced through energy efficiency measures."
 p_ghg_mitigation,ac9,"Emissions can be reduced through electrification of equipment."
-p_ghg_mitigation,ac10,""
+p_ghg_mitigation,ac10,"Emissions can be reduced through carbon capture and storage (CCS) technologies."
 p_ghg_mitigation,ac11,"The rehabilitation of mine sites can be used to capture CO2 with appropriate reclamation strategies."
 
 p_air_quality,ac12,"Air emissions are released during transportation."

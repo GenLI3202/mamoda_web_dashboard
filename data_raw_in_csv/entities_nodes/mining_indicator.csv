@@ -8,7 +8,7 @@ m5,Education Investment,Community Wellbeing,"Impact on social responsibility: In
 m6,Child Labor Compliance,Community Wellbeing,Employment of underaged children,"Yes/No; #",Compliance Audits
 m7,Infrastructure Contribution,Community Wellbeing,"Contribution to regional development: Investments in infrastructure (electricity, roads, water supply,...)","USD or LCY; km",Infrastructure Development Plans
 m8,Population Displacement,Community Wellbeing,Displacement of local population due to mining activities,"% of households",Resettlement Action Plans (RAP)
-m9,Community Satisfaction,Community Wellbeing,"Dissatisfaction with mining-associated activities among local population",Survey score (e.g., 1-5),Community Perception Surveys
+m9,Community Satisfaction,Community Wellbeing,"Dissatisfaction with mining-associated activities among local population","Survey score (e.g., 1-5)",Community Perception Surveys
 m10,Cultural Accommodation,Community Wellbeing,"Accommodation of community's cultural/religion/other needs",Qualitative assessment,Community Engagement Records
 m11,Public Authority Quality,Community Wellbeing,"Public authority quality score (transparency, trust, corruption...)",Index score,World Bank Governance Indicators
 m12,Female Workforce Representation,Social Equality,% of women in the regional mine division,"%",HR Records
@@ -18,12 +18,12 @@ m15,Local Skills Employment,Social Equality,"Contribution to local development: 
 m17,Expatriate vs. Domestic Pay Gap,Social Equality,Domestic vs. foreign employees' pay gap,Ratio,Internal HR Audits
 m18,Gender Pay Gap,Social Equality,Gender pay gap within the mine entity,"%",Internal HR Audits
 m19,Work Injury Coverage,Workers Wellbeing,"Coverage in the event of work injury: % of employees covered","%",Insurance Policies & HR Records
-m20,Employee Stress Level,Workers Wellbeing,"Working environment monitor: Stress level score across employees",Survey score (e.g., 1-5),Employee Wellness Surveys
+m20,Employee Stress Level,Workers Wellbeing,"Working environment monitor: Stress level score across employees","Survey score (e.g., 1-5)",Employee Wellness Surveys
 m21,Safety Training Sessions,Workers Wellbeing,"Working safety: Info- and training session on safety, hazards, risks, etc.","# of sessions/hours",Training Logs
 m22,Occupational Injuries & Fatalities,Workers Wellbeing,"Occupational injuries and fatalities: Annual per mine statistics",LTIFR; #,Annual Safety Reports
 m23,Full-time Employment Rate,Workers Wellbeing,"Employment composition on the mine entity: % of full-time employee","%",HR Records
 m24,Water Quality Dynamics,Environmental Impact,"Water quality in mine-adjacent water bodies (in dynamics)","mg/L; pH; NTU",Environmental Monitoring Reports
-m25,Resource Consumption Efficiency,Environmental Impact,"Environmental effect of mine associated activities: NetWater/Production, EnergyConsumption/Production, CO2/Production, else",Ratio (e.g., m³/t, kWh/t, tCO2/t),Sustainability Reports
+m25,Resource Consumption Efficiency,Environmental Impact,"Environmental effect of mine associated activities: NetWater/Production, EnergyConsumption/Production, CO2/Production, else","Ratio (e.g., m³/t, kWh/t, tCO2/t)",Sustainability Reports
 m26,Waste Management Plan Quality,Environmental Impact,"Waste management plan: Granularity (time, scale, scope)",Qualitative score,Environmental Management System (EMS)
 m27,Air Quality Dynamics,Environmental Impact,"Air quality in mine adjacent locations (dynamics in appropriate indicators)","μg/m³; ppm",Environmental Monitoring Reports
 m28,Land Reclamation Funding,Environmental Impact,Planning & funding of land restoration and reclamation,"USD; Plan status",Mine Closure Plans

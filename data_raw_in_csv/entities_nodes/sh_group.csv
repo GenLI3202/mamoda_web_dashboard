@@ -1,5 +1,5 @@
-id,name,description, evidence
-shg1,Civil Society,"Groups representing public interests, community welfare, and non-commercial concerns.", "Azapagic 2004, GRI 14, Erzurumlu et al. 2014 and ..."
-shg2,Project or Internal,"Individuals and entities directly involved in the planning and execution of the mining project.", "Azapagic 2004, GRI 14, Erzurumlu et al. 2014 and ..."
+id,name,description,evidence
+shg1,Civil Society,"Groups representing public interests, community welfare, and non-commercial concerns.","Azapagic 2004, GRI 14, Erzurumlu et al. 2014 and ..."
+shg2,Project or Internal,"Individuals and entities directly involved in the planning and execution of the mining project.","Azapagic 2004, GRI 14, Erzurumlu et al. 2014 and ..."
 shg3,Market and Financial,"Stakeholders driven by economic and financial performance, investment, and market dynamics.","Azapagic 2004, GRI 14, Erzurumlu et al. and ..."
 shg4,Government and Regulatory,"Official bodies and organizations that set standards, enforce laws, and oversee the industry.","Azapagic 2004, GRI 14, Erzurumlu et al. and ..."
