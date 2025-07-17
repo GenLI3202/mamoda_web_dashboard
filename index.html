@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
     
+    <link href="lib/vis-9.1.2/vis-network.css" rel="stylesheet" type="text/css" />
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -39,7 +41,6 @@
         <div id="Explorer" class="tab-content">
             <h3>Select a Table to View</h3>
             <div class="filter-controls">
-                <!-- The dropdown will be created by JavaScript and placed here -->
                 <select id="table-selector"></select>
                 <button id="show-table-btn">Show</button>
             </div>
@@ -48,7 +49,22 @@
             </table>
         </div>
 
-        <div id="Graph" class="tab-content"></div>
+        <div id="Graph" class="tab-content">
+            <h3>Graph Controls</h3>
+            <div class="filter-controls">
+                <select id="graph-entity-selector"></select>
+                <button id="show-graph-btn">Show Graph</button>
+            </div>
+            <hr>
+            <div class="graph-container">
+                <div id="knowledge-graph-canvas" class="graph-main"></div>
+                <div id="graph-info-panel" class="graph-sidebar">
+                    <h4>Node Information</h4>
+                    <p>Hover over a node to see its details here.</p>
+                </div>
+            </div>
+        </div>
+
         <div id="Sankey" class="tab-content"></div>
         <div id="InteractiveMOP" class="tab-content"></div>
     </div>
@@ -56,7 +72,8 @@
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
+    <script type="text/javascript" src="lib/vis-9.1.2/vis-network.min.js"></script>
+    
     <script src="script.js"></script>
 </body>
 </html>
