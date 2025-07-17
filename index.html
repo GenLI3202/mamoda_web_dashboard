@@ -1,36 +1,85 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Sustainable Mining Knowledge Hub</title>
+    <!-- Link to the external CSS file -->
     <link rel="stylesheet" href="style.css">
+    <!-- Link to the vis.js CSS library -->
+    <link href="lib/vis-9.1.2/vis-network.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-    <header>
-        <h1>Sustainable Mining Knowledge Hub</h1>
-    </header>
+    <div class="app-container">
+        <header>
+            <h1>Sustainable Mining Knowledge Hub</h1>
+        </header>
 
-    <div class="tab-container">
-        <button class="tab-link active" onclick="openTab(event, 'Welcome')">🏠 Welcome</button>
-        <button class="tab-link" onclick="openTab(event, 'Explorer')">🔍 Data Explorer</button>
-        <button class="tab-link" onclick="openTab(event, 'Graph')">🕸️ Knowledge Graph</button>
+        <div class="tab-container">
+            <button class="tab-link active" onclick="openTab(event, 'Welcome')">🏠 Welcome</button>
+            <button class="tab-link" onclick="openTab(event, 'Explorer')">🔍 Data Explorer</button>
+            <button class="tab-link" onclick="openTab(event, 'Graph')">🕸️ Knowledge Graph</button>
+            <button class="tab-link" onclick="openTab(event, 'Sankey')">🌊 Impact Flow</button>
+            <button class="tab-link" onclick="openTab(event, 'InteractiveMOP')">🎮 Interactive MOP</button>
+        </div>
+
+        <!-- Welcome Tab Content -->
+        <div id="Welcome" class="tab-content" style="display:block;">
+            <h2>Welcome to the Interactive Knowledge System</h2>
+            <p>This tool is designed to help analyze the complex relationships between mining practices, stakeholders, and the Sustainable Development Goals (SDGs).</p>
+            <h4>How to Use This Tool:</h4>
+            <ul>
+                <li><b>Data Explorer:</b> Use this tab to browse the raw data in tables with powerful filtering and sorting.</li>
+                <li><b>Knowledge Graph:</b> Use this tab to visualize the entire network of connections between different entities.</li>
+                <li><b>Impact Flow:</b> Use this tab to trace the impact from Mining Practices to SDG Targets using a Sankey diagram.</li>
+                <li><b>Interactive MOP:</b> Use this tab to explore the multi-objective programming (MOP) model interactively...Under Construction.</li>
+            </ul>
+        </div>
+
+        <!-- Data Explorer Tab Content -->
+        <div id="Explorer" class="tab-content">
+            <h3>Filters</h3>
+            <div class="filter-controls">
+                <select id="stakeholder-filter"></select>
+                <select id="practice-category-filter"></select>
+            </div>
+            <h3>Results: Mining Practices</h3>
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Practice Name</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table rows will be inserted here by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Knowledge Graph Tab Content -->
+        <div id="Graph" class="tab-content">
+            <div id="knowledge-network" style="width: 100%; height: 600px; border: 1px solid lightgray;"></div>
+        </div>
+
+        <!-- Sankey Diagram Tab Content -->
+        <div id="Sankey" class="tab-content">
+             <div id="sankey-diagram" style="width: 100%; height: 600px; border: 1px solid lightgray;"></div>
+        </div>
+
+        <!-- Interactive MOP Tab Content -->
+        <div id="InteractiveMOP" class="tab-content">
+            <h2>Interactive MOP</h2>
+            <p>Content for the interactive MOP goes here...</p>
+        </div>
     </div>
 
-    <div id="Welcome" class="tab-content" style="display:block;">
-        <h2>Welcome & Overview</h2>
-        <p>Content for the welcome page goes here...</p>
-    </div>
-
-    <div id="Explorer" class="tab-content">
-        <h2>Data Explorer</h2>
-        <p>Interactive tables and filters will go here...</p>
-    </div>
-
-    <div id="Graph" class="tab-content">
-        <h2>Knowledge Graph</h2>
-        <p>The network visualization will go here...</p>
-    </div>
-
+    <!-- Load external libraries -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="lib/vis-9.1.2/vis-network.min.js"></script>
+    
+    <!-- Link to the external JavaScript file -->
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sustainable Mining Knowledge Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Sustainable Mining Knowledge Hub</h1>
+    </header>
+
+    <div class="tab-container">
+        <button class="tab-link active" onclick="openTab(event, 'Welcome')">🏠 Welcome</button>
+        <button class="tab-link" onclick="openTab(event, 'Explorer')">🔍 Data Explorer</button>
+        <button class="tab-link" onclick="openTab(event, 'Graph')">🕸️ Knowledge Graph</button>
+    </div>
+
+    <div id="Welcome" class="tab-content" style="display:block;">
+        <h2>Welcome & Overview</h2>
+        <p>Content for the welcome page goes here...</p>
+    </div>
+
+    <div id="Explorer" class="tab-content">
+        <h2>Data Explorer</h2>
+        <p>Interactive tables and filters will go here...</p>
+    </div>
+
+    <div id="Graph" class="tab-content">
+        <h2>Knowledge Graph</h2>
+        <p>The network visualization will go here...</p>
+    </div>
+
+    <div id="Interactive MOP" class="tab-content">
+        <h2>Interactive MOP</h2>
+        <p>Content for the interactive MOP goes here...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
