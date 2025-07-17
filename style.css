@@ -1,0 +1,6 @@
+/* style.css */
+body { font-family: sans-serif; }
+.tab-container { overflow: hidden; border-bottom: 1px solid #ccc; }
+.tab-link { background-color: #f1f1f1; border: none; outline: none; cursor: pointer; padding: 14px 16px; float: left; }
+.tab-link.active { background-color: #ddd; }
+.tab-content { padding: 20px; border-top: none; display: none; }

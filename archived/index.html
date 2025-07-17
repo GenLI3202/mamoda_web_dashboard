@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Chosen Palette: Warm Neutral Harmony -->
+    <!-- Application Structure Plan: The application is designed as a single-page, task-oriented dashboard. The structure prioritizes user-led exploration over a linear narrative. It begins with high-level KPIs for immediate context, followed by the core interactive module. This module uses a tab-based navigation to allow users to select an "entry point" (Practices, SDGs, Stakeholders), which then updates a central visualization area and a detailed information panel. This interactive, non-linear structure was chosen because the source report describes a complex network of data. A dashboard approach empowers users to find the specific information they need and discover relationships organically, which is more effective for both expert analysis and learning than a static, one-way presentation. -->
+    <!-- Visualization & Content Choices: 
+        - High-Level KPIs (Goal: Inform): Presented as large numbers for quick comprehension of the knowledge base's scale. Method: Styled HTML.
+        - Knowledge Network (Goal: Relationships): A Chart.js Bubble Chart is used to represent all entities (nodes). A true force-directed graph is not possible due to the NO SVG/D3 constraint. The bubble chart serves as a canvas-based alternative to visualize the nodes. Interaction: Clicking a bubble (node) filters the entire dashboard, updating the detail panel to show its connections and attributes, thus simulating the exploration of graph "edges". Library: Chart.js.
+        - Implementation Analysis (Goal: Compare): A Chart.js Scatter Plot visualizes practices based on Capital Intensity vs. Technical Complexity, allowing for strategic comparison. Library: Chart.js.
+        - Stakeholder Concerns (Goal: Compare): A Chart.js Horizontal Bar Chart ranks stakeholder concerns, offering clear comparative insights. Library: Chart.js.
+        - Detail Panel (Goal: Inform): A dynamic HTML block provides deep, contextual information about any selected node, fulfilling the need for detailed, on-demand data that charts cannot provide. Method: Vanilla JS DOM manipulation.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <title>Interactive Dashboard: Sustainable Mining Knowledge System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8; /* Warm neutral background */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 96;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 450px;
+                max-height: 500px;
+            }
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+            border-bottom: 4px solid transparent;
+        }
+        .nav-button.active {
+            border-bottom-color: #A37E63; /* Accent color */
+            color: #A37E63;
+        }
+        .nav-button:hover {
+            background-color: #F5F1ED;
+        }
+        .card {
+            background-color: #FFFFFF;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+            border: 1px solid #EAE5E0;
+        }
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .primary-accent { color: #A37E63; }
+        .bg-primary-light { background-color: #F5F1ED; }
+        .text-primary-dark { color: #523A28; }
+        .bg-secondary-light { background-color: #E6EBE0; }
+        .text-secondary-dark { color: #43503A; }
+        .bg-tertiary-light { background-color: #E0EAEB; }
+        .text-tertiary-dark { color: #3A4F50; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F5F1ED; }
+        ::-webkit-scrollbar-thumb { background: #D1C3B8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #A37E63; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white sticky top-0 z-20 shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-primary-dark">Sustainable Mining Knowledge System</h1>
+            <p class="text-sm md:text-base text-gray-500 mt-1">An interactive dashboard for exploring the relationships between mining practices, stakeholders, and SDGs.</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <section id="kpis" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="card p-4 text-center">
+                <h2 class="text-sm font-semibold text-gray-500">PRACTICES</h2>
+                <p class="text-3xl font-bold primary-accent" id="kpi-practices">4</p>
+            </div>
+            <div class="card p-4 text-center">
+                <h2 class="text-sm font-semibold text-gray-500">STAKEHOLDERS</h2>
+                <p class="text-3xl font-bold primary-accent" id="kpi-stakeholders">12</p>
+            </div>
+            <div class="card p-4 text-center">
+                <h2 class="text-sm font-semibold text-gray-500">SDG GOALS</h2>
+                <p class="text-3xl font-bold primary-accent" id="kpi-sdgs">5</p>
+            </div>
+            <div class="card p-4 text-center">
+                <h2 class="text-sm font-semibold text-gray-500">RELATIONSHIPS</h2>
+                <p class="text-3xl font-bold primary-accent" id="kpi-relationships">15+</p>
+            </div>
+        </section>
+
+        <section id="interactive-dashboard" class="card p-6">
+             <div class="mb-6">
+                <h2 class="text-xl font-bold text-primary-dark">Interactive Knowledge Explorer</h2>
+                <p class="text-gray-600 mt-1">This dashboard allows you to explore the complex network of sustainability data. Start by selecting an entry point (Practices, SDGs, or Stakeholders) from the tabs below. Use the dropdown to select a specific item. The charts and detail panel will update to reflect your selection, showing you how different concepts are interconnected.</p>
+            </div>
+
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                    <button id="nav-practices" class="nav-button active whitespace-nowrap py-4 px-1 text-base font-medium">Practices</button>
+                    <button id="nav-sdgs" class="nav-button whitespace-nowrap py-4 px-1 text-base font-medium">SDGs</button>
+                    <button id="nav-stakeholders" class="nav-button whitespace-nowrap py-4 px-1 text-base font-medium">Stakeholders</button>
+                </nav>
+            </div>
+
+            <div class="mt-6">
+                 <label for="item-selector" class="block text-sm font-medium text-gray-700">Select an item to explore:</label>
+                 <select id="item-selector" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-800 focus:border-amber-800 sm:text-sm rounded-md"></select>
+            </div>
+
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="search-input" class="block text-sm font-medium text-gray-700">Search/filter nodes:</label>
+                    <input id="search-input" type="text" placeholder="Type to filter" class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-amber-800 focus:border-amber-800 sm:text-sm rounded-md" />
+                </div>
+                <div class="flex items-end justify-end md:justify-start">
+                    <button id="downloadGraph" class="mt-1 px-4 py-2 bg-amber-800 text-white text-sm rounded-md hover:bg-amber-700">Download Graph</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                <div class="lg:col-span-2 card p-4">
+                    <h3 class="font-bold text-center text-primary-dark">Knowledge Network</h3>
+                     <div class="chart-container h-[500px] max-h-[500px]">
+                        <canvas id="knowledgeGraph"></canvas>
+                    </div>
+                </div>
+                <div id="details-panel" class="lg:col-span-1 card p-4 h-[550px] overflow-y-auto">
+                    <h3 class="font-bold text-primary-dark text-lg">Details</h3>
+                    <div id="details-content" class="mt-2 text-sm">Select an item to see its details and connections.</div>
+                </div>
+            </div>
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                <div class="card p-4">
+                    <h3 class="font-bold text-center text-primary-dark">Implementation Analysis</h3>
+                    <p class="text-xs text-center text-gray-500 mb-2">Capital Intensity vs. Technical Complexity</p>
+                    <div class="chart-container h-80 max-h-80">
+                        <canvas id="implementationChart"></canvas>
+                    </div>
+                </div>
+                <div class="card p-4">
+                     <h3 class="font-bold text-center text-primary-dark">Top Stakeholder Concerns</h3>
+                      <div class="chart-container h-80 max-h-80">
+                        <canvas id="concernsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center py-6 mt-8 bg-gray-100 border-t border-gray-200">
+        <p class="text-sm text-gray-500">Dashboard built based on the "Strategic and Technical Roadmap for an Interactive Knowledge System on Sustainable Mining".</p>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // --- DATA (Simulating API fetch) ---
+        const DATA = {
+            practices: [
+                { id: 'p1', name: 'GHG Emissions Management', category: 'Environmental', capital_intensity: 8, technical_complexity: 9, description: 'Implementing technologies and processes to monitor, report, and reduce greenhouse gas emissions to combat climate change.' },
+                { id: 'p2', name: 'Water Management', category: 'Environmental', capital_intensity: 7, technical_complexity: 8, description: 'Comprehensive management of water use, recycling, and discharge to protect local water resources and ensure community access.' },
+                { id: 'p3', name: 'Overall Environmental Management', category: 'Environmental', capital_intensity: 7, technical_complexity: 7, description: 'Holistic practices to manage environmental impact, including biodiversity protection, waste management, and land rehabilitation.' },
+                { id: 'p4', name: 'Local Community Engagement', category: 'Social', capital_intensity: 4, technical_complexity: 5, description: 'Engaging with local communities to ensure benefits are shared, rights are respected, and economic opportunities are created.' },
+            ],
+            sdgs: [
+                { id: 'sdg1', name: 'SDG 1: No Poverty', goal: 1, description: 'End poverty in all its forms everywhere.'},
+                { id: 'sdg6', name: 'SDG 6: Clean Water and Sanitation', goal: 6, description: 'Ensure availability and sustainable management of water and sanitation for all.' },
+                { id: 'sdg8', name: 'SDG 8: Decent Work and Economic Growth', goal: 8, description: 'Promote sustained, inclusive and sustainable economic growth, full and productive employment and decent work for all.' },
+                { id: 'sdg13', name: 'SDG 13: Climate Action', goal: 13, description: 'Take urgent action to combat climate change and its impacts.' },
+                { id: 'sdg15', name: 'SDG 15: Life on Land', goal: 15, description: 'Protect, restore and promote sustainable use of terrestrial ecosystems.'},
+            ],
+            stakeholders: [
+                { id: 'sh1', name: 'Local Communities', category: 'Civil Society' },
+                { id: 'sh2', name: 'NGOs & CSOs', category: 'Civil Society' },
+                { id: 'sh3', name: 'Media', category: 'Civil Society' },
+                { id: 'sh4', name: 'Employees', category: 'Project/Internal' },
+                { id: 'sh5', name: 'Trade Unions', category: 'Project/Internal' },
+                { id: 'sh6', name: 'Suppliers', category: 'Project/Internal' },
+                { id: 'sh7', name: 'Investors', category: 'Market & Financial' },
+                { id: 'sh8', name: 'Shareholders', category: 'Market & Financial' },
+                { id: 'sh9', name: 'Insurers', category: 'Market & Financial' },
+                { id: 'sh10', name: 'Governments', category: 'Government & Regulatory' },
+                { id: 'sh11', name: 'Local Authorities', category: 'Government & Regulatory' },
+                { id: 'sh12', name: 'Industry Associations', category: 'Government & Regulatory' },
+            ],
+            concerns: [
+                 { id: 'c1', name: 'Jobs & local business opportunities', score: 95 },
+                 { id: 'c2', name: 'Environmental protection', score: 92 },
+                 { id: 'c3', name: 'Community health and safety', score: 88 },
+                 { id: 'c4', name: 'Water resource management', score: 85 },
+                 { id: 'c5', name: 'Transparency & anti-corruption', score: 75 },
+            ],
+            relationships: [
+                { source: 'p1', target: 'sdg13' },
+                { source: 'p2', target: 'sdg6' },
+                { source: 'p3', target: 'sdg15' },
+                { source: 'p4', target: 'sdg1' },
+                { source: 'p4', target: 'sdg8' },
+                { source: 'p1', target: 'sh2' }, 
+                { source: 'p1', target: 'sh7' }, 
+                { source: 'p1', target: 'sh10' },
+                { source: 'p2', target: 'sh1' },
+                { source: 'p2', target: 'sh11' },
+                { source: 'p3', target: 'sh1' },
+                { source: 'p3', target: 'sh2' },
+                { source: 'p3', target: 'sh11' },
+                { source: 'p4', target: 'sh1' },
+                { source: 'p4', target: 'sh4' },
+                { source: 'p4', target: 'sh5' },
+            ]
+        };
+        
+        // --- UI ELEMENTS ---
+        const navButtons = {
+            practices: document.getElementById('nav-practices'),
+            sdgs: document.getElementById('nav-sdgs'),
+            stakeholders: document.getElementById('nav-stakeholders'),
+        };
+        const itemSelector = document.getElementById('item-selector');
+        const searchInput = document.getElementById('search-input');
+        const downloadBtn = document.getElementById('downloadGraph');
+        const detailsContent = document.getElementById('details-content');
+        
+        let charts = {};
+        let state = {
+            activeNav: 'practices',
+            selectedId: 'p1',
+            searchQuery: '',
+            fullNodeData: []
+        };
+
+        const PALETTE = {
+            practice: 'rgba(163, 126, 99, 0.7)', // Main Accent
+            sdg: 'rgba(67, 80, 58, 0.7)', // Secondary
+            stakeholder: 'rgba(58, 79, 80, 0.7)', // Tertiary
+            highlight: 'rgba(217, 38, 48, 0.9)',
+            light: 'rgba(200, 200, 200, 0.5)'
+        };
+
+        const ENTITY_CONFIG = {
+            practices: { data: DATA.practices, color: PALETTE.practice, type: 'Practice' },
+            sdgs: { data: DATA.sdgs, color: PALETTE.sdg, type: 'SDG' },
+            stakeholders: { data: DATA.stakeholders, color: PALETTE.stakeholder, type: 'Stakeholder' },
+        };
+
+        // --- CHARTING FUNCTIONS ---
+        const networkLinesPlugin = {
+            id: 'networkLines',
+            afterDraw: (chart) => {
+                const { ctx, data } = chart;
+                const meta = chart.getDatasetMeta(0);
+                const elements = meta.data || [];
+
+                const elementPosById = {};
+                elements.forEach((element, index) => {
+                    const pointData = data.datasets[0].data[index];
+                    if (pointData && pointData.id) {
+                        elementPosById[pointData.id] = { x: element.x, y: element.y };
+                    }
+                });
+                
+                ctx.save();
+                
+                DATA.relationships.forEach(rel => {
+                    const sourcePos = elementPosById[rel.source];
+                    const targetPos = elementPosById[rel.target];
+
+                    if (sourcePos && targetPos) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+                        ctx.lineWidth = 1;
+                        ctx.moveTo(sourcePos.x, sourcePos.y);
+                        ctx.lineTo(targetPos.x, targetPos.y);
+                        ctx.stroke();
+                    }
+                });
+                ctx.restore();
+            }
+        };
+
+        const createKnowledgeGraph = () => {
+            const ctx = document.getElementById('knowledgeGraph').getContext('2d');
+
+            const connectionCount = {};
+            DATA.relationships.forEach(r => {
+                connectionCount[r.source] = (connectionCount[r.source] || 0) + 1;
+                connectionCount[r.target] = (connectionCount[r.target] || 0) + 1;
+            });
+
+            const nodeData = Object.entries(ENTITY_CONFIG).flatMap(([key, config]) =>
+                config.data.map(item => ({
+                    x: Math.random() * 20,
+                    y: Math.random() * 20,
+                    r: 8 + (connectionCount[item.id] || 0) * 2,
+                    label: item.name,
+                    id: item.id,
+                    entityType: config.type,
+                    baseColor: config.color,
+                }))
+            );
+            state.fullNodeData = nodeData;
+
+            charts.knowledgeGraph = new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: [{
+                        label: 'Entities',
+                        data: nodeData,
+                        backgroundColor: nodeData.map(d => d.baseColor)
+                    }]
+                },
+                plugins: [networkLinesPlugin],
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        point: {
+                            pointStyle: ctx => {
+                                const type = ctx.raw.entityType;
+                                if (type === 'Stakeholder') return 'triangle';
+                                if (type === 'Practice') return 'rect';
+                                return 'circle';
+                            }
+                        }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const dataset = e.chart.data.datasets[elements[0].datasetIndex];
+                            const dataPoint = dataset.data[elements[0].index];
+                            state.selectedId = dataPoint.id;
+                            const typeKey = Object.keys(ENTITY_CONFIG).find(k => ENTITY_CONFIG[k].type === dataPoint.entityType);
+                            if (typeKey && state.activeNav !== typeKey) {
+                                state.activeNav = typeKey;
+                                updateNav();
+                                populateSelector();
+                            }
+                            itemSelector.value = state.selectedId;
+                            updateDashboard();
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => {
+                                    const point = context.raw;
+                                    return `${point.entityType}: ${point.label}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { display: false },
+                        y: { display: false }
+                    }
+                }
+            });
+
+            const canvas = charts.knowledgeGraph.canvas;
+            let dragging = null;
+            canvas.addEventListener('mousedown', evt => {
+                const points = charts.knowledgeGraph.getElementsAtEventForMode(evt, 'nearest', {intersect: true}, false);
+                if (points.length) {
+                    const p = charts.knowledgeGraph.data.datasets[points[0].datasetIndex].data[points[0].index];
+                    dragging = p;
+                }
+            });
+            canvas.addEventListener('mousemove', evt => {
+                if (dragging) {
+                    const pos = Chart.helpers.getRelativePosition(evt, charts.knowledgeGraph);
+                    dragging.x = charts.knowledgeGraph.scales.x.getValueForPixel(pos.x);
+                    dragging.y = charts.knowledgeGraph.scales.y.getValueForPixel(pos.y);
+                    charts.knowledgeGraph.update('none');
+                }
+            });
+            document.addEventListener('mouseup', () => { dragging = null; });
+        };
+
+        const createImplementationChart = () => {
+            const ctx = document.getElementById('implementationChart').getContext('2d');
+            charts.implementationChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Mining Practices',
+                        data: DATA.practices.map(p => ({ x: p.technical_complexity, y: p.capital_intensity, name: p.name })),
+                        backgroundColor: PALETTE.practice
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: { point: { pointStyle: 'rect' } },
+                    plugins: { legend: { display: false }, tooltip: {
+                         callbacks: {
+                            label: (c) => `${c.raw.name}: (Complexity: ${c.raw.x}, Intensity: ${c.raw.y})`
+                        }
+                    }},
+                    scales: {
+                        x: { title: { display: true, text: 'Technical Complexity' } },
+                        y: { title: { display: true, text: 'Capital Intensity' } }
+                    }
+                }
+            });
+        };
+
+        const createConcernsChart = () => {
+            const ctx = document.getElementById('concernsChart').getContext('2d');
+            charts.concernsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: DATA.concerns.map(c => c.name.split(' & ')),
+                    datasets: [{
+                        label: 'Concern Score',
+                        data: DATA.concerns.map(c => c.score),
+                        backgroundColor: [PALETTE.practice, PALETTE.sdg, PALETTE.stakeholder, '#D1C3B8', '#E6EBE0'],
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }
+                }
+            });
+        };
+        
+        // --- UI & STATE LOGIC ---
+        const populateSelector = () => {
+            const data = ENTITY_CONFIG[state.activeNav].data;
+            itemSelector.innerHTML = data.map(item => `<option value="${item.id}">${item.name}</option>`).join('');
+            itemSelector.value = state.selectedId;
+        };
+
+        const updateNav = () => {
+            Object.values(navButtons).forEach(btn => btn.classList.remove('active'));
+            navButtons[state.activeNav].classList.add('active');
+        };
+        
+        const updateDetailsPanel = () => {
+            const { data, type } = ENTITY_CONFIG[state.activeNav];
+            const selectedItem = data.find(item => item.id === state.selectedId);
+            if (!selectedItem) return;
+
+            let connectionsHtml = '<h4>Connections:</h4><ul class="list-disc pl-5 mt-2 space-y-1">';
+            const connectedIds = new Set();
+            DATA.relationships.forEach(r => {
+                if (r.source === selectedItem.id) connectedIds.add(r.target);
+                if (r.target === selectedItem.id) connectedIds.add(r.source);
+            });
+            
+            if (connectedIds.size === 0) {
+                 connectionsHtml += '<li>No direct connections in this dataset.</li>';
+            } else {
+                 connectedIds.forEach(id => {
+                    const practice = DATA.practices.find(p => p.id === id);
+                    const sdg = DATA.sdgs.find(s => s.id === id);
+                    const stakeholder = DATA.stakeholders.find(sh => sh.id === id);
+                    if (practice) connectionsHtml += `<li><span class="tag bg-primary-light text-primary-dark">Practice</span> ${practice.name}</li>`;
+                    if (sdg) connectionsHtml += `<li><span class="tag bg-secondary-light text-secondary-dark">SDG</span> ${sdg.name}</li>`;
+                    if (stakeholder) connectionsHtml += `<li><span class="tag bg-tertiary-light text-tertiary-dark">Stakeholder</span> ${stakeholder.name}</li>`;
+                });
+            }
+            connectionsHtml += '</ul>';
+
+            detailsContent.innerHTML = `
+                <h3 class="font-bold text-primary-dark text-lg">${selectedItem.name}</h3>
+                <span class="tag ${type === 'Practice' ? 'bg-primary-light text-primary-dark' : type === 'SDG' ? 'bg-secondary-light text-secondary-dark' : 'bg-tertiary-light text-tertiary-dark'}">${type}</span>
+                ${selectedItem.description ? `<p class="mt-2 text-gray-600">${selectedItem.description}</p>` : ''}
+                <div class="mt-4">${connectionsHtml}</div>
+            `;
+        };
+
+        const updateKnowledgeGraphHighlight = () => {
+            const connectedIds = new Set([state.selectedId]);
+            DATA.relationships.forEach(r => {
+                if (r.source === state.selectedId) connectedIds.add(r.target);
+                if (r.target === state.selectedId) connectedIds.add(r.source);
+            });
+
+            const dataset = charts.knowledgeGraph.data.datasets[0];
+            const backgroundColors = [];
+
+            dataset.data.forEach(point => {
+                if (point.id === state.selectedId) {
+                    point.r = 25;
+                    backgroundColors.push(PALETTE.highlight);
+                } else if (connectedIds.has(point.id)) {
+                    point.r = 18;
+                    backgroundColors.push(point.baseColor);
+                } else {
+                    point.r = 8;
+                    backgroundColors.push(PALETTE.light);
+                }
+            });
+            
+            dataset.backgroundColor = backgroundColors;
+            charts.knowledgeGraph.update();
+        };
+
+        const applySearchFilter = () => {
+            const dataset = charts.knowledgeGraph.data.datasets[0];
+            const query = state.searchQuery.toLowerCase();
+            dataset.data = state.fullNodeData.filter(d => d.label.toLowerCase().includes(query));
+            dataset.backgroundColor = dataset.data.map(d => d.baseColor);
+            if (!dataset.data.find(p => p.id === state.selectedId) && dataset.data.length) {
+                state.selectedId = dataset.data[0].id;
+                itemSelector.value = state.selectedId;
+                updateDetailsPanel();
+            }
+            charts.knowledgeGraph.update();
+            updateKnowledgeGraphHighlight();
+        };
+
+        const updateDashboard = () => {
+            updateDetailsPanel();
+            updateKnowledgeGraphHighlight();
+        };
+
+        const handleNavClick = (navKey) => {
+            state.activeNav = navKey;
+            state.selectedId = ENTITY_CONFIG[navKey].data[0].id;
+            updateNav();
+            populateSelector();
+            updateDashboard();
+            applySearchFilter();
+        };
+
+        // --- INITIALIZATION ---
+        const init = () => {
+            createKnowledgeGraph();
+            createImplementationChart();
+            createConcernsChart();
+            
+            Object.keys(navButtons).forEach(key => {
+                navButtons[key].addEventListener('click', () => handleNavClick(key));
+            });
+
+            itemSelector.addEventListener('change', (e) => {
+                state.selectedId = e.target.value;
+                updateDashboard();
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                state.searchQuery = e.target.value;
+                applySearchFilter();
+            });
+
+            downloadBtn.addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.href = charts.knowledgeGraph.toBase64Image();
+                link.download = 'knowledge_graph.png';
+                link.click();
+            });
+
+            handleNavClick('practices');
+            applySearchFilter();
+        };
+        
+        init();
+    });
+    </script>
+</body>
+</html>
