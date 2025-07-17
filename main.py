@@ -2,13 +2,8 @@
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
-
-# --- THIS IS THE CRUCIAL FIX ---
-# By importing the entire 'models' module, we ensure Python executes
-# the models.py file and all your table classes are registered with SQLAlchemy's Base.
 import models 
 from models import Base
 
@@ -25,7 +20,6 @@ def object_as_dict(obj):
     return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
 
 # --- API ENDPOINTS ---
-# These will now be registered correctly after the models are loaded.
 
 @app.get("/api/tables")
 def get_table_names():
@@ -38,7 +32,6 @@ def get_table_data(table_name: str):
     db = SessionLocal()
     try:
         ModelClass = None
-        # This loop will now find all your models correctly.
         for mapper in Base.registry.mappers:
             if mapper.local_table.name == table_name:
                 ModelClass = mapper.class_
@@ -53,6 +46,4 @@ def get_table_data(table_name: str):
     finally:
         db.close()
 
-# --- SERVE THE FRONTEND ---
-# This MUST come after all API endpoints are defined.
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
+# The app.mount line has been REMOVED. Vercel will handle serving the index.html.
