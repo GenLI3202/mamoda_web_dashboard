@@ -2,6 +2,7 @@
 
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 import models 
@@ -20,7 +21,6 @@ def object_as_dict(obj):
     return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
 
 # --- API ENDPOINTS ---
-
 @app.get("/api/tables")
 def get_table_names():
     inspector = inspect(engine)
@@ -46,4 +46,7 @@ def get_table_data(table_name: str):
     finally:
         db.close()
 
-# The app.mount line has been REMOVED. Vercel will handle serving the index.html.
+# --- SERVE THE FRONTEND ---
+# This line is added back in. It tells FastAPI to also serve all static files
+# from the current directory ('.') and to look for an index.html file.
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
