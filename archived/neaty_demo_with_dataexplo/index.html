@@ -1,13 +1,13 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Sustainable Mining Knowledge Hub</title>
-    
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-    
+    <!-- Link to the external CSS file -->
     <link rel="stylesheet" href="style.css">
+    <!-- Link to the vis.js CSS library -->
+    <link href="lib/vis-9.1.2/vis-network.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
     <div class="app-container">
@@ -36,27 +36,50 @@
             </ul>
         </div>
 
+        <!-- Data Explorer Tab Content -->
         <div id="Explorer" class="tab-content">
-            <h3>Select a Table to View</h3>
+            <h3>Filters</h3>
             <div class="filter-controls">
-                <!-- The dropdown will be created by JavaScript and placed here -->
-                <select id="table-selector"></select>
-                <button id="show-table-btn">Show</button>
+                <select id="stakeholder-filter"></select>
+                <select id="practice-category-filter"></select>
             </div>
-            <h3 id="table-title"></h3>
-            <table id="results-table" class="display responsive" style="width:100%">
+            <h3>Results: Mining Practices</h3>
+            <table id="results-table">
+                <thead>
+                    <tr>
+                        <th>Practice Name</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Table rows will be inserted here by JavaScript -->
+                </tbody>
             </table>
         </div>
 
-        <div id="Graph" class="tab-content"></div>
-        <div id="Sankey" class="tab-content"></div>
-        <div id="InteractiveMOP" class="tab-content"></div>
+        <!-- Knowledge Graph Tab Content -->
+        <div id="Graph" class="tab-content">
+            <div id="knowledge-network" style="width: 100%; height: 600px; border: 1px solid lightgray;"></div>
+        </div>
+
+        <!-- Sankey Diagram Tab Content -->
+        <div id="Sankey" class="tab-content">
+             <div id="sankey-diagram" style="width: 100%; height: 600px; border: 1px solid lightgray;"></div>
+        </div>
+
+        <!-- Interactive MOP Tab Content -->
+        <div id="InteractiveMOP" class="tab-content">
+            <h2>Interactive MOP</h2>
+            <p>Content for the interactive MOP goes here...</p>
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-
+    <!-- Load external libraries -->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="lib/vis-9.1.2/vis-network.min.js"></script>
+    
+    <!-- Link to the external JavaScript file -->
     <script src="script.js"></script>
 </body>
 </html>
