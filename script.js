@@ -237,7 +237,7 @@ function drawKnowledgeGraph() {
                         const capitalized = group.charAt(0).toUpperCase() + group.slice(1);
                         html += `<details class="connection-group"><summary>${capitalized}s (${connectionsByType[group].length})</summary><ul>`;
                         connectionsByType[group].forEach(cn => {
-                            html += `<li>${cn.label} (<em>${cn.id}</em>)</li>`;
+                            html += `<li>(<em>${cn.id}</em>) ${cn.label}</li>`;
                         });
                         html += `</ul></details>`;
                     }
