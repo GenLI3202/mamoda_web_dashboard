@@ -1,3 +1,5 @@
+// script.js
+
 // Global state variables
 let availableTables = [];
 let graphData = { nodes: [], edges: [] };
@@ -18,7 +20,9 @@ function openTab(evt, tabName) {
 
 // --- DATA EXPLORER LOGIC ---
 function handleShowTableClick() {
-    const selectedTableName = document.getElementById('table-selector').value;
+    const selector = document.getElementById('table-selector');
+    const selectedTableName = selector.value;
+    
     fetch(`/api/table/${selectedTableName}`)
         .then(response => response.json())
         .then(data => {
@@ -77,7 +81,7 @@ function setupGraphSelectors() {
     tomSelectGroup = new TomSelect('#graph-group-selector', {
         options: [
             { value: 'all', text: 'Show Full Graph' },
-            ...Object.keys(groupedNodes).map(g => ({ value: `group_${g}`, text: `All ${g.replace('_', ' ')}s` }))
+            ...Object.keys(groupedNodes).map(g => ({ value: `group_${g}`, text: `All ${g.replace(/_/g, ' ')}s` }))
         ],
         onChange: (value) => {
             tomSelectItem.clear();
@@ -95,7 +99,7 @@ function setupGraphSelectors() {
     });
     
     Object.keys(groupedNodes).forEach(groupName => {
-        const capitalized = (groupName.charAt(0).toUpperCase() + groupName.slice(1)).replace('_', ' ');
+        const capitalized = (groupName.charAt(0).toUpperCase() + groupName.slice(1)).replace(/_/g, ' ');
         tomSelectGroup.addOption({ value: groupName, text: capitalized + 's' });
     });
 
@@ -116,7 +120,7 @@ function drawKnowledgeGraph() {
     if (!selection || selection === 'all') {
         displayData = { ...graphData };
     } else if (selection.startsWith('group_')) {
-        const groupName = selection.split('_')[1];
+        const groupName = selection.substring('group_'.length);
         focusGroup = groupName;
         
         const groupNodeIds = new Set(graphData.nodes.filter(n => n.group === groupName).map(n => n.id));
@@ -181,6 +185,7 @@ function drawKnowledgeGraph() {
             action: { color: { border: '#9b59b6', background: '#9b59b6'} },
             stakeholdergroup: { color: { border: '#1abc9c', background: '#1abc9c'} },
             mining_indicator: { color: { border: '#777777', background: '#777777'} },
+            // BUG FIX: Added new group color for SDG Indicators
             sdg_indicator: { color: { border: '#2ecc71', background: '#2ecc71'} }
         }
     };
@@ -194,7 +199,7 @@ function drawKnowledgeGraph() {
             const node = graphData.nodes.find(n => n.id === nodeId);
             if (node) {
                 let html = `<h4>${node.label}</h4>`;
-                html += `<p><strong>Type:</strong> ${node.group.replace('_', ' ')}</p>`;
+                html += `<p><strong>Type:</strong> ${node.group.replace(/_/g, ' ')}</p>`;
                 html += `<p><strong>ID:</strong> ${node.id}</p>`;
                 
                 const connections = graphData.edges
@@ -212,7 +217,7 @@ function drawKnowledgeGraph() {
                 if (Object.keys(connectionsByType).length > 0) {
                     html += `<p><strong>Connections:</strong></p>`;
                     for (const group in connectionsByType) {
-                        const capitalized = (group.charAt(0).toUpperCase() + group.slice(1)).replace('_', ' ');
+                        const capitalized = (group.charAt(0).toUpperCase() + group.slice(1)).replace(/_/g, ' ');
                         html += `<details class="connection-group"><summary>${capitalized}s (${connectionsByType[group].length})</summary><ul>`;
                         connectionsByType[group].forEach(cn => {
                             html += `<li>(<em>${cn.id}</em>) ${cn.label}</li>`;

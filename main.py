@@ -59,9 +59,7 @@ def get_graph_data():
         nodes.extend([{'id': g.id, 'label': g.name, 'group': 'goal'} for g in db.query(SDG_Goal).all()])
         nodes.extend([{'id': o.id, 'label': o.id, 'group': 'objective'} for o in db.query(SD_Objective).all()])
         nodes.extend([{'id': a.id, 'label': a.name, 'group': 'action'} for a in db.query(PracticeAction).all()])
-        # BUG FIX: Corrected group name to remove underscore
         nodes.extend([{'id': sg.id, 'label': sg.name, 'group': 'stakeholdergroup'} for sg in db.query(Stakeholder_Group).all()])
-        # BUG FIX: Differentiated the two indicator types
         nodes.extend([{'id': mi.id, 'label': mi.name, 'group': 'mining_indicator'} for mi in db.query(MiningIndicator).all()])
         nodes.extend([{'id': si.id, 'label': f"SDG Indicator {si.id}", 'group': 'sdg_indicator'} for si in db.query(SDG_Indicator).all()])
 
