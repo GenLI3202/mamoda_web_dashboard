@@ -77,7 +77,7 @@ function setupGraphSelectors() {
     tomSelectGroup = new TomSelect('#graph-group-selector', {
         options: [
             { value: 'all', text: 'Show Full Graph' },
-            ...Object.keys(groupedNodes).map(g => ({ value: `group_${g}`, text: `All ${g}s` }))
+            ...Object.keys(groupedNodes).map(g => ({ value: `group_${g}`, text: `All ${g.replace('_', ' ')}s` }))
         ],
         onChange: (value) => {
             tomSelectItem.clear();
@@ -94,9 +94,8 @@ function setupGraphSelectors() {
         }
     });
     
-    // Add an option for each group to the first dropdown
     Object.keys(groupedNodes).forEach(groupName => {
-        const capitalized = groupName.charAt(0).toUpperCase() + groupName.slice(1);
+        const capitalized = (groupName.charAt(0).toUpperCase() + groupName.slice(1)).replace('_', ' ');
         tomSelectGroup.addOption({ value: groupName, text: capitalized + 's' });
     });
 
@@ -105,73 +104,57 @@ function setupGraphSelectors() {
     });
     tomSelectItem.disable();
 }
-// Replace the existing drawKnowledgeGraph function in your script.js with this one.
+
 function drawKnowledgeGraph() {
-    // Get values from the Tom Select instances.
     const groupSelection = tomSelectGroup.getValue();
     const itemSelection = tomSelectItem.getValue();
     const selection = itemSelection || groupSelection;
 
     let displayData = { nodes: [], edges: [] };
-    let focusGroup = null; // This will store the name of the group we want to highlight
+    let focusGroup = null;
 
     if (!selection || selection === 'all') {
-        // Handle "Show Full Graph"
-        displayData = { ...graphData }; // Use a copy of the original data
+        displayData = { ...graphData };
     } else if (selection.startsWith('group_')) {
-        // Handle "Show All..." group selection
         const groupName = selection.split('_')[1];
-        focusGroup = groupName; // Set the focus group for highlighting
+        focusGroup = groupName;
         
         const groupNodeIds = new Set(graphData.nodes.filter(n => n.group === groupName).map(n => n.id));
         const connectedNodeIds = new Set(groupNodeIds);
-
         graphData.edges.forEach(edge => {
             if (groupNodeIds.has(edge.from)) connectedNodeIds.add(edge.to);
             if (groupNodeIds.has(edge.to)) connectedNodeIds.add(edge.from);
         });
-
         displayData.nodes = graphData.nodes.filter(node => connectedNodeIds.has(node.id));
         displayData.edges = graphData.edges.filter(edge => connectedNodeIds.has(edge.from) && connectedNodeIds.has(edge.to));
-
     } else {
-        // Handle single node selection
         const focusNodeId = selection;
         const focusNode = graphData.nodes.find(n => n.id === focusNodeId);
-        if (focusNode) {
-            focusGroup = focusNode.group; // Set the focus group to the single node's group
-        }
+        if (focusNode) focusGroup = focusNode.group;
         
         const connectedNodeIds = new Set([focusNodeId]);
         graphData.edges.forEach(edge => {
             if (edge.from === focusNodeId) connectedNodeIds.add(edge.to);
             if (edge.to === focusNodeId) connectedNodeIds.add(edge.from);
         });
-
         displayData.nodes = graphData.nodes.filter(node => connectedNodeIds.has(node.id));
         displayData.edges = graphData.edges.filter(edge => connectedNodeIds.has(edge.from) && connectedNodeIds.has(edge.to));
     }
 
-    // --- NEW: Apply Highlighting Styles by Changing Shape ---
     if (focusGroup) {
-        // Make a deep copy of nodes to modify them without affecting the original data
         displayData.nodes = JSON.parse(JSON.stringify(displayData.nodes));
-
         displayData.nodes.forEach(node => {
             if (node.group === focusGroup) {
-                // Emphasize focus nodes by changing their shape and size
-                node.shape = 'star'; // 'dot', 'square', 'triangle', 'star', 'diamond', 'ellipse' etc.
+                node.shape = 'star';
                 node.size = 16;
             }
-            // All other nodes will keep their default 'dot' shape and color
         });
     }
-
 
     const container = document.getElementById('knowledge-graph-canvas');
     const options = {
         nodes: {
-            shape: 'dot', // Default shape for all nodes
+            shape: 'dot',
             size: 10,
             font: { size: 12, color: '#555', vadjust: 15 },
             borderWidth: 2
@@ -187,26 +170,23 @@ function drawKnowledgeGraph() {
             minVelocity: 0.1,
             stabilization: { iterations: 150 }
         },
-        interaction: {
-            hover: true,
-            tooltipDelay: 200
-        },
+        interaction: { hover: true, tooltipDelay: 200 },
         groups: {
             practice: { color: { border: '#f0ad4e', background: '#f0ad4e'} },
             stakeholder: { color: { border: '#5bc0de', background: '#5bc0de'} },
             concern: { color: { border: '#d9534f', background: '#d9534f'} },
             target: { color: { border: '#5cb85c', background: '#5cb85c'} },
             goal: { color: { border: '#337ab7', background: '#337ab7'} },
-            indicator: { color: { border: '#777777', background: '#777777'} },
             objective: { color: { border: '#34495e', background: '#34495e'} },
             action: { color: { border: '#9b59b6', background: '#9b59b6'} },
-            stakeholder_group: { color: { border: '#1abc9c', background: '#1abc9c'} }
+            stakeholdergroup: { color: { border: '#1abc9c', background: '#1abc9c'} },
+            mining_indicator: { color: { border: '#777777', background: '#777777'} },
+            sdg_indicator: { color: { border: '#2ecc71', background: '#2ecc71'} }
         }
     };
 
     network = new vis.Network(container, displayData, options);
 
-    // --- Sidebar Interactivity ---
     network.on('click', function(params) {
         const infoPanel = document.getElementById('graph-info-panel');
         if (params.nodes.length > 0) {
@@ -214,7 +194,7 @@ function drawKnowledgeGraph() {
             const node = graphData.nodes.find(n => n.id === nodeId);
             if (node) {
                 let html = `<h4>${node.label}</h4>`;
-                html += `<p><strong>Type:</strong> ${node.group}</p>`;
+                html += `<p><strong>Type:</strong> ${node.group.replace('_', ' ')}</p>`;
                 html += `<p><strong>ID:</strong> ${node.id}</p>`;
                 
                 const connections = graphData.edges
@@ -224,17 +204,15 @@ function drawKnowledgeGraph() {
                         return null;
                     })
                     .filter(Boolean);
-
                 const connectionsByType = connections.reduce((acc, n) => {
                     if (!acc[n.group]) acc[n.group] = [];
                     acc[n.group].push(n);
                     return acc;
                 }, {});
-
                 if (Object.keys(connectionsByType).length > 0) {
                     html += `<p><strong>Connections:</strong></p>`;
                     for (const group in connectionsByType) {
-                        const capitalized = group.charAt(0).toUpperCase() + group.slice(1);
+                        const capitalized = (group.charAt(0).toUpperCase() + group.slice(1)).replace('_', ' ');
                         html += `<details class="connection-group"><summary>${capitalized}s (${connectionsByType[group].length})</summary><ul>`;
                         connectionsByType[group].forEach(cn => {
                             html += `<li>(<em>${cn.id}</em>) ${cn.label}</li>`;
