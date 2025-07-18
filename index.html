@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <title>Sustainable Mining Knowledge Hub</title>
     
+    <!-- Library CSS -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
-    
     <link href="lib/vis-9.1.2/vis-network.css" rel="stylesheet" type="text/css" />
+    <!-- NEW: Tom Select CSS -->
+    <link href="lib/tom-select/tom-select.css" rel="stylesheet">
 
+    <!-- Your custom CSS file -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -38,6 +41,7 @@
             </ul>
         </div>
 
+        <!-- Data Explorer Tab Content -->
         <div id="Explorer" class="tab-content">
             <h3>Select a Table to View</h3>
             <div class="filter-controls">
@@ -45,14 +49,16 @@
                 <button id="show-table-btn">Show</button>
             </div>
             <h3 id="table-title"></h3>
-            <table id="results-table" class="display responsive" style="width:100%">
-            </table>
+            <table id="results-table" class="display responsive" style="width:100%"></table>
         </div>
 
+        <!-- Knowledge Graph Tab Content -->
         <div id="Graph" class="tab-content">
             <h3>Graph Controls</h3>
+            <!-- NEW: Two-stage dropdown controls -->
             <div class="filter-controls">
-                <select id="graph-entity-selector"></select>
+                <select id="graph-group-selector" placeholder="Select Entity Type..."></select>
+                <select id="graph-item-selector" placeholder="Select Specific Item..."></select>
                 <button id="show-graph-btn">Show Graph</button>
             </div>
             <hr>
@@ -60,20 +66,25 @@
                 <div id="knowledge-graph-canvas" class="graph-main"></div>
                 <div id="graph-info-panel" class="graph-sidebar">
                     <h4>Node Information</h4>
-                    <p>Hover over a node to see its details here.</p>
+                    <p>Click on a node to see its details here.</p>
                 </div>
             </div>
         </div>
 
+        <!-- Other Tab Content -->
         <div id="Sankey" class="tab-content"></div>
         <div id="InteractiveMOP" class="tab-content"></div>
     </div>
 
+    <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script type="text/javascript" src="lib/vis-9.1.2/vis-network.min.js"></script>
+    <!-- NEW: Tom Select JavaScript -->
+    <script src="lib/tom-select/tom-select.complete.min.js"></script>
     
+    <!-- Your custom JavaScript file -->
     <script src="script.js"></script>
 </body>
 </html>

@@ -53,16 +53,24 @@ header {
     to { opacity: 1; } 
 }
 
-/* Data Explorer Styles */
+/* Data Explorer & Graph Controls Styles */
 .filter-controls { 
     margin-bottom: 15px; 
+    display: flex; /* NEW: Aligns dropdowns and button in a row */
+    align-items: center;
 }
 .filter-controls select, .filter-controls button {
-    padding: 8px 12px;
     margin-right: 10px;
-    border: 1px solid #ccc;
+    border: 2px solid #297cac;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: 15px;
+}
+/* NEW: Style for Tom Select dropdowns */
+.filter-controls .ts-control {
+    min-width: 200px;
+}
+.filter-controls button {
+    padding: 8px 12px;
 }
 #results-table {
     margin-top: 15px;
@@ -91,11 +99,10 @@ header {
     border: 1px solid #eee;
     border-radius: 4px;
     background-color: #f9f9f9;
-    /* NEW: Allow vertical scrolling if content overflows */
     overflow-y: auto;
+    font-size: 0.9em; /* Make sidebar text slightly smaller */
 }
 
-/* --- NEW: Styles for the collapsible sections in the sidebar --- */
 .connection-group summary {
     cursor: pointer;
     font-weight: bold;
@@ -110,5 +117,4 @@ header {
 
 .connection-group li {
     padding: 3px 0;
-    font-size: 0.9em;
 }

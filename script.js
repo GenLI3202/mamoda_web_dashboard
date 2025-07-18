@@ -1,46 +1,35 @@
-// This variable will hold our table names once loaded from the API.
+// Global state variables
 let availableTables = [];
-// This variable will hold the complete graph data (nodes and edges).
 let graphData = { nodes: [], edges: [] };
-// This variable will hold the vis.js network instance.
 let network = null;
+let tomSelectGroup = null;
+let tomSelectItem = null;
 
 // --- TAB SWITCHING LOGIC ---
 function openTab(evt, tabName) {
     let i, tabContent, tabLinks;
     tabContent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabContent.length; i++) {
-        tabContent[i].style.display = "none";
-    }
+    for (i = 0; i < tabContent.length; i++) tabContent[i].style.display = "none";
     tabLinks = document.getElementsByClassName("tab-link");
-    for (i = 0; i < tabLinks.length; i++) {
-        tabLinks[i].className = tabLinks[i].className.replace(" active", "");
-    }
+    for (i = 0; i < tabLinks.length; i++) tabLinks[i].className = tabLinks[i].className.replace(" active", "");
     document.getElementById(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
 
 // --- DATA EXPLORER LOGIC ---
 function handleShowTableClick() {
-    const selector = document.getElementById('table-selector');
-    const selectedTableName = selector.value;
-    
+    const selectedTableName = document.getElementById('table-selector').value;
     fetch(`/api/table/${selectedTableName}`)
         .then(response => response.json())
         .then(data => {
-            if (!data || data.length === 0) {
-                renderTable([], []);
-                document.getElementById('table-title').textContent = `No data found for: ${selectedTableName}`;
-                return;
-            }
-            const columnNames = Object.keys(data[0]);
+            const columnNames = (data && data.length > 0) ? Object.keys(data[0]) : [];
             const tableColumns = columnNames.map(colName => ({
                 title: colName,
                 data: colName,
-                render: (data, type, row) => (type === 'display' && typeof data === 'object' && data !== null) ? (data.name || data.short_name || data.id || '') : data
+                render: (d) => (typeof d === 'object' && d !== null) ? (d.name || d.short_name || d.id || '') : d
             }));
             document.getElementById('table-title').textContent = `Data for: ${selectedTableName}`;
-            renderTable(data, tableColumns);
+            renderTable(data || [], tableColumns);
         })
         .catch(error => console.error(`Error fetching data for ${selectedTableName}:`, error));
 }
@@ -50,25 +39,13 @@ function renderTable(data, columns) {
         $('#results-table').DataTable().destroy();
     }
     $('#results-table').empty();
-    $('#results-table').DataTable({
-        data: data,
-        columns: columns,
-        responsive: true,
-        paging: true,
-        searching: true,
-        info: true
-    });
+    $('#results-table').DataTable({ data, columns, responsive: true, paging: true, searching: true, info: true });
 }
 
 function populateTableSelection(tableNames) {
     const selector = document.getElementById('table-selector');
     selector.innerHTML = '';
-    tableNames.forEach(tableName => {
-        const option = document.createElement('option');
-        option.value = tableName;
-        option.textContent = tableName;
-        selector.appendChild(option);
-    });
+    tableNames.forEach(tableName => selector.innerHTML += `<option value="${tableName}">${tableName}</option>`);
 }
 
 function initializeDataExplorer() {
@@ -82,122 +59,185 @@ function initializeKnowledgeGraph() {
     fetch('/api/graph-data')
         .then(response => response.json())
         .then(data => {
-            console.log("✅ Graph data loaded successfully!", data);
             graphData = data;
-            populateGraphSelector();
+            setupGraphSelectors();
             document.getElementById('show-graph-btn').addEventListener('click', drawKnowledgeGraph);
         })
         .catch(error => console.error("❌ Error loading graph data:", error));
 }
 
-function populateGraphSelector() {
-    const selector = document.getElementById('graph-entity-selector');
-    selector.innerHTML = '<option value="all">Show Full Graph</option>';
-
+function setupGraphSelectors() {
     const groupedNodes = graphData.nodes.reduce((acc, node) => {
         const group = node.group || 'unknown';
         if (!acc[group]) acc[group] = [];
-        acc[group].push(node);
+        acc[group].push({ value: node.id, text: node.label });
         return acc;
     }, {});
 
-    for (const groupName in groupedNodes) {
-        const optgroup = document.createElement('optgroup');
-        const capitalizedGroupName = groupName.charAt(0).toUpperCase() + groupName.slice(1);
-        optgroup.label = `${capitalizedGroupName}s`;
-        
-        const groupOption = document.createElement('option');
-        groupOption.value = `group_${groupName}`;
-        groupOption.textContent = `Show All ${capitalizedGroupName}s`;
-        optgroup.appendChild(groupOption);
+    tomSelectGroup = new TomSelect('#graph-group-selector', {
+        options: [
+            { value: 'all', text: 'Show Full Graph' },
+            ...Object.keys(groupedNodes).map(g => ({ value: `group_${g}`, text: `All ${g}s` }))
+        ],
+        onChange: (value) => {
+            tomSelectItem.clear();
+            tomSelectItem.clearOptions();
+            if (value && !value.startsWith('group_') && value !== 'all') {
+                const groupName = value;
+                const items = groupedNodes[groupName] || [];
+                items.sort((a,b) => a.text.localeCompare(b.text));
+                tomSelectItem.addOptions(items);
+                tomSelectItem.enable();
+            } else {
+                tomSelectItem.disable();
+            }
+        }
+    });
+    
+    // Add an option for each group to the first dropdown
+    Object.keys(groupedNodes).forEach(groupName => {
+        const capitalized = groupName.charAt(0).toUpperCase() + groupName.slice(1);
+        tomSelectGroup.addOption({ value: groupName, text: capitalized + 's' });
+    });
 
-        groupedNodes[groupName].sort((a, b) => a.label.localeCompare(b.label));
-        
-        groupedNodes[groupName].forEach(node => {
-            const option = document.createElement('option');
-            option.value = node.id;
-            option.textContent = `  ↳ ${node.label}`;
-            optgroup.appendChild(option);
-        });
-        selector.appendChild(optgroup);
-    }
+    tomSelectItem = new TomSelect('#graph-item-selector', {
+        placeholder: 'Select a specific item...',
+    });
+    tomSelectItem.disable();
 }
-
+// Replace the existing drawKnowledgeGraph function in your script.js with this one.
 function drawKnowledgeGraph() {
-    const selection = document.getElementById('graph-entity-selector').value;
-    let displayData = { nodes: [], edges: [] };
+    // Get values from the Tom Select instances.
+    const groupSelection = tomSelectGroup.getValue();
+    const itemSelection = tomSelectItem.getValue();
+    const selection = itemSelection || groupSelection;
 
-    if (selection === 'all') {
-        displayData = graphData;
+    let displayData = { nodes: [], edges: [] };
+    let focusGroup = null; // This will store the name of the group we want to highlight
+
+    if (!selection || selection === 'all') {
+        // Handle "Show Full Graph"
+        displayData = { ...graphData }; // Use a copy of the original data
     } else if (selection.startsWith('group_')) {
+        // Handle "Show All..." group selection
         const groupName = selection.split('_')[1];
+        focusGroup = groupName; // Set the focus group for highlighting
+        
         const groupNodeIds = new Set(graphData.nodes.filter(n => n.group === groupName).map(n => n.id));
         const connectedNodeIds = new Set(groupNodeIds);
+
         graphData.edges.forEach(edge => {
             if (groupNodeIds.has(edge.from)) connectedNodeIds.add(edge.to);
             if (groupNodeIds.has(edge.to)) connectedNodeIds.add(edge.from);
         });
+
         displayData.nodes = graphData.nodes.filter(node => connectedNodeIds.has(node.id));
         displayData.edges = graphData.edges.filter(edge => connectedNodeIds.has(edge.from) && connectedNodeIds.has(edge.to));
+
     } else {
+        // Handle single node selection
         const focusNodeId = selection;
+        const focusNode = graphData.nodes.find(n => n.id === focusNodeId);
+        if (focusNode) {
+            focusGroup = focusNode.group; // Set the focus group to the single node's group
+        }
+        
         const connectedNodeIds = new Set([focusNodeId]);
         graphData.edges.forEach(edge => {
             if (edge.from === focusNodeId) connectedNodeIds.add(edge.to);
             if (edge.to === focusNodeId) connectedNodeIds.add(edge.from);
         });
+
         displayData.nodes = graphData.nodes.filter(node => connectedNodeIds.has(node.id));
         displayData.edges = graphData.edges.filter(edge => connectedNodeIds.has(edge.from) && connectedNodeIds.has(edge.to));
     }
 
+    // --- NEW: Apply Highlighting Styles by Changing Shape ---
+    if (focusGroup) {
+        // Make a deep copy of nodes to modify them without affecting the original data
+        displayData.nodes = JSON.parse(JSON.stringify(displayData.nodes));
+
+        displayData.nodes.forEach(node => {
+            if (node.group === focusGroup) {
+                // Emphasize focus nodes by changing their shape and size
+                node.shape = 'star'; // 'dot', 'square', 'triangle', 'star', 'diamond', 'ellipse' etc.
+                node.size = 16;
+            }
+            // All other nodes will keep their default 'dot' shape and color
+        });
+    }
+
+
     const container = document.getElementById('knowledge-graph-canvas');
     const options = {
-        nodes: { shape: 'dot', size: 16, font: { size: 14, color: '#333' }, borderWidth: 2 },
-        edges: { width: 1, color: { color: '#cccccc', highlight: '#4a69bd' } },
-        physics: { forceAtlas2Based: { gravitationalConstant: -50, centralGravity: 0.005, springLength: 230, springConstant: 0.18 }, maxVelocity: 146, solver: 'forceAtlas2Based', timestep: 0.35, stabilization: { iterations: 150 } },
-        interaction: { hover: true, tooltipDelay: 200 },
-        groups: { practice: { color: '#f0ad4e' }, stakeholder: { color: '#5bc0de' }, concern: { color: '#d9534f' }, target: { color: '#5cb85c' }, goal: { color: '#337ab7' }, indicator: { color: '#777777' } }
+        nodes: {
+            shape: 'dot', // Default shape for all nodes
+            size: 10,
+            font: { size: 12, color: '#555', vadjust: 15 },
+            borderWidth: 2
+        },
+        edges: {
+            width: 0.5,
+            color: { color: '#cccccc', highlight: '#4a69bd' }
+        },
+        physics: {
+            solver: 'forceAtlas2Based',
+            forceAtlas2Based: { gravitationalConstant: -50, centralGravity: 0.01, springLength: 200, springConstant: 0.08, avoidOverlap: 0.5 },
+            maxVelocity: 50,
+            minVelocity: 0.1,
+            stabilization: { iterations: 150 }
+        },
+        interaction: {
+            hover: true,
+            tooltipDelay: 200
+        },
+        groups: {
+            practice: { color: { border: '#f0ad4e', background: '#f0ad4e'} },
+            stakeholder: { color: { border: '#5bc0de', background: '#5bc0de'} },
+            concern: { color: { border: '#d9534f', background: '#d9534f'} },
+            target: { color: { border: '#5cb85c', background: '#5cb85c'} },
+            goal: { color: { border: '#337ab7', background: '#337ab7'} },
+            indicator: { color: { border: '#777777', background: '#777777'} },
+            objective: { color: { border: '#34495e', background: '#34495e'} },
+            action: { color: { border: '#9b59b6', background: '#9b59b6'} },
+            stakeholder_group: { color: { border: '#1abc9c', background: '#1abc9c'} }
+        }
     };
 
     network = new vis.Network(container, displayData, options);
 
-    // --- NEW: Add CLICK Interactivity for the Sidebar ---
+    // --- Sidebar Interactivity ---
     network.on('click', function(params) {
         const infoPanel = document.getElementById('graph-info-panel');
-        // If a node is clicked
         if (params.nodes.length > 0) {
             const nodeId = params.nodes[0];
             const node = graphData.nodes.find(n => n.id === nodeId);
-            
             if (node) {
                 let html = `<h4>${node.label}</h4>`;
                 html += `<p><strong>Type:</strong> ${node.group}</p>`;
+                html += `<p><strong>ID:</strong> ${node.id}</p>`;
                 
-                const connectedEdges = graphData.edges.filter(edge => edge.from === nodeId || edge.to === nodeId);
-                
-                // Group connections by type
-                const connectionsByType = connectedEdges.reduce((acc, edge) => {
-                    const otherNodeId = edge.from === nodeId ? edge.to : edge.from;
-                    const otherNode = graphData.nodes.find(n => n.id === otherNodeId);
-                    if (otherNode) {
-                        const group = otherNode.group || 'unknown';
-                        if (!acc[group]) acc[group] = [];
-                        acc[group].push(otherNode);
-                    }
+                const connections = graphData.edges
+                    .map(edge => {
+                        if (edge.from === nodeId) return graphData.nodes.find(n => n.id === edge.to);
+                        if (edge.to === nodeId) return graphData.nodes.find(n => n.id === edge.from);
+                        return null;
+                    })
+                    .filter(Boolean);
+
+                const connectionsByType = connections.reduce((acc, n) => {
+                    if (!acc[n.group]) acc[n.group] = [];
+                    acc[n.group].push(n);
                     return acc;
                 }, {});
 
                 if (Object.keys(connectionsByType).length > 0) {
                     html += `<p><strong>Connections:</strong></p>`;
                     for (const group in connectionsByType) {
-                        const groupNodes = connectionsByType[group];
-                        const capitalizedGroup = group.charAt(0).toUpperCase() + group.slice(1);
-                        // Use <details> for collapsible sections
-                        html += `<details class="connection-group">`;
-                        html += `<summary>${capitalizedGroup}s (${groupNodes.length})</summary>`;
-                        html += `<ul>`;
-                        groupNodes.forEach(connectedNode => {
-                            html += `<li>${connectedNode.label}</li>`;
+                        const capitalized = group.charAt(0).toUpperCase() + group.slice(1);
+                        html += `<details class="connection-group"><summary>${capitalized}s (${connectionsByType[group].length})</summary><ul>`;
+                        connectionsByType[group].forEach(cn => {
+                            html += `<li>${cn.label} (<em>${cn.id}</em>)</li>`;
                         });
                         html += `</ul></details>`;
                     }
@@ -205,7 +245,6 @@ function drawKnowledgeGraph() {
                 infoPanel.innerHTML = html;
             }
         } else {
-            // If the background is clicked, reset the sidebar
             infoPanel.innerHTML = '<h4>Node Information</h4><p>Click on a node to see its details here.</p>';
         }
     });
