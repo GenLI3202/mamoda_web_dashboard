@@ -1,0 +1,34 @@
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+.env.*
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# Database files
+*.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# macOS metadata
+.DS_Store
+
+# Node modules
+node_modules/
+
